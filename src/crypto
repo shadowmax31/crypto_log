@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+
+import fire
+from tinydb import TinyDB
+
+from config import Config
+from transaction import Transaction
+from report import Report
+
+class Crypto(object):
+    """ 
+    This tool is for tracking your crypto transactions. It tracks the cost basis for any crypto and the capital gain
+    """
+    def __init__(self):
+        config = Config()
+        self.db = TinyDB(config.dbPath())
+
+    def delete(self, table, docId):
+        tbl = self.db.table(table)
+        tbl.remove(doc_ids=[docId])
+
+    def buy(self, amount, ticker, price, description=None):
+        """
+        Adds info to the cost basis for the specified crypto ticker 
+        :param amount: How much of the crypto did you buy?
+        :param ticker: Name of the crypto ticker
+        :param price: Price you paid for the crypto (including fees)
+        """
+        ticker = ticker.upper()
+        transaction = Transaction(self.db)
+        transaction.buy(amount, ticker, price, description)
+
+    def sell(self, amount, ticker, forPrice):
+        """
+        Tracks details of selling a crypto
+        """
+        ticker = ticker.upper()
+        transaction = Transaction(self.db)
+        transaction.sell(amount, ticker, forPrice)
+
+    def exchange(self, fromAmount, fromTicker, toAmount, toTicker, toPrice):
+        fromTicker = fromTicker.upper()
+        toTicker = toTicker.upper()
+
+        transaction = Transaction(self.db)
+        transaction.exchange(fromAmount, fromTicker, toAmount, toTicker, toPrice)
+
+# Reports
+
+    def cost(self, ticker, details=False):
+        """
+        Returns the cost basis of the specified ticker
+        """
+        ticker = ticker.upper()
+
+        report = Report(self.db)
+        report.costBasis(ticker, details)
+
+    def cg(self, details=False):
+        """
+        Returns info about your capital gain or loss
+        """
+        report = Report(self.db)
+        report.capitalGain(details)
+
+if __name__ == '__main__':
+    fire.Fire(Crypto)
