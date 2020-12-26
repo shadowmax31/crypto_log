@@ -47,6 +47,12 @@ class Crypto(object):
 
 # Reports
 
+    def amount(self, ticker):
+        ticker = ticker.upper()
+        
+        report = Report(self.db)
+        report.amount(ticker)
+
     def cost(self, ticker, details=False):
         """
         Returns the cost basis of the specified ticker

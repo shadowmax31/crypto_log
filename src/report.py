@@ -1,6 +1,6 @@
 from cost_basis import CostBasis
 from capital_gain import CapitalGain
-from const import GREEN, YELLOW, ENDC, RED
+from const import GREEN, YELLOW, ENDC, RED, TransactionType
 
 class Report:
     def __init__(self, db):
@@ -39,3 +39,20 @@ class Report:
             print("You have " + RED + str(abs(capitalGain)) + "$" + ENDC + " of capital losses")
         else:
             print(GREEN + "You have no capital gains or losses")
+
+    def amount(self, ticker):
+        table = self.db.table(ticker)
+
+        amount = 0
+        for row in table:
+            if row["type"] == TransactionType.BUY.name:
+                amount += row["amount"]
+            elif row["type"] == TransactionType.SELL.name:
+                amount -= row["amount"]
+            else:
+                raise Exception("Transaction type [" + row["type"] + "] not implemented") 
+
+        print("You have " + GREEN + str(amount) + ENDC + " " + ticker)
+            
+
+
