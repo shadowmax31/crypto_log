@@ -7,6 +7,7 @@ from config import Config
 from transaction import Transaction
 from report import Report
 from undo import Undo
+from history import History
 
 class Crypto(object):
     """ 
@@ -15,6 +16,8 @@ class Crypto(object):
     def __init__(self):
         config = Config()
         self.db = TinyDB(config.dbPath())
+        self.history = History(self.db)
+
 
     def undo(self):
         confirm = input("Are you sur you want to undo the last change? This will not be reversible [Y/N]: ").upper()
@@ -77,5 +80,11 @@ class Crypto(object):
         report = Report(self.db)
         report.capitalGain(details)
 
+    def export(self, transactionOnly=False, withIds=False):
+        report = Report(self.db)
+        report.allHistory(self.history, transactionOnly, withIds)
+
+
 if __name__ == '__main__':
     fire.Fire(Crypto)
+
