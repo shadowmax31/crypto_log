@@ -55,11 +55,11 @@ class Report:
         print("You have " + GREEN + str(amount) + ENDC + " " + ticker)
             
 
-    def allHistory(self, history, transactionOnly, withIds):
-        if transactionOnly:
-            historyList = history.transactionOnly()
-        else:
+    def history(self, history, all, withIds):
+        if all:
             historyList = history.all()
+        else:
+            historyList = history.transactionOnly()
 
         for cmd in historyList:
             line = cmd["command"] 

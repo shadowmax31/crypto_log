@@ -80,9 +80,9 @@ class Crypto(object):
         report = Report(self.db)
         report.capitalGain(details)
 
-    def export(self, transactionOnly=False, withIds=False):
+    def export(self, all=False, withIds=False):
         report = Report(self.db)
-        report.allHistory(self.history, transactionOnly, withIds)
+        report.history(self.history, all, withIds)
 
 
 if __name__ == '__main__':
