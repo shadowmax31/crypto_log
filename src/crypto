@@ -6,6 +6,7 @@ from tinydb import TinyDB
 from config import Config
 from transaction import Transaction
 from report import Report
+from undo import Undo
 
 class Crypto(object):
     """ 
@@ -14,6 +15,13 @@ class Crypto(object):
     def __init__(self):
         config = Config()
         self.db = TinyDB(config.dbPath())
+
+    def undo(self):
+        confirm = input("Are you sur you want to undo the last change? This will not be reversible [Y/N]: ").upper()
+
+        if confirm == "Y":
+            undo = Undo(self.db)
+            undo.undo()
 
     def delete(self, table, docId):
         tbl = self.db.table(table)
