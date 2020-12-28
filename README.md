@@ -14,3 +14,6 @@ Reports
 
 Testing
 - Add unit tests
+
+Deploy
+- Add a way to deploy the project
