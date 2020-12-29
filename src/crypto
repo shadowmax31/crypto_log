@@ -20,6 +20,9 @@ class Crypto(object):
 
 
     def undo(self):
+        """
+        Undo the last operation
+        """
         confirm = input("Are you sur you want to undo the last change? This will not be reversible [Y/N]: ").upper()
 
         if confirm == "Y":
@@ -27,12 +30,19 @@ class Crypto(object):
             undo.undo()
 
     def delete(self, table, docId):
+        """
+        Mostly used for developpement. It allows to delete a document
+
+        :param table: Table to use to delete the document
+        :param docId: Id of the document to delete
+        """
         tbl = self.db.table(table)
         tbl.remove(doc_ids=[docId])
 
     def buy(self, amount, ticker, price, description=None):
         """
         Adds info to the cost basis for the specified crypto ticker 
+
         :param amount: How much of the crypto did you buy?
         :param ticker: Name of the crypto ticker
         :param price: Price you paid for the crypto (including fees)
@@ -50,6 +60,15 @@ class Crypto(object):
         transaction.sell(amount, ticker, forPrice)
 
     def exchange(self, fromAmount, fromTicker, toAmount, toTicker, toPrice):
+        """
+        Tracks the value of an exchange (crypto for crypto)
+
+        :param fromAmount: Amount to remove from fromTicker
+        :param fromTicker: crypto that is exchanged for toTicker
+        :param toAmount: amount of toTicker you bought with fromTicker
+        :param toTicker: the new crypto that was bought
+        :param toPrice: the current price (in fiat currency) for the amount of crypto (toTicker) that was bought
+        """
         fromTicker = fromTicker.upper()
         toTicker = toTicker.upper()
 
@@ -59,6 +78,11 @@ class Crypto(object):
 # Reports
 
     def amount(self, ticker):
+        """
+        Gets the amount of crypto for the ticker
+
+        :param ticker: Crypto ticker
+        """
         ticker = ticker.upper()
         
         report = Report(self.db)
@@ -81,6 +105,9 @@ class Crypto(object):
         report.capitalGain(details)
 
     def export(self, all=False, withIds=False):
+        """
+        Exports the history of transaction in the current database
+        """
         report = Report(self.db)
         report.history(self.history, all, withIds)
 
