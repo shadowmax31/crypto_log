@@ -15,5 +15,5 @@ class History:
     def transactionOnly(self):
         q = Query()
         return self.db.table("history").search(
-                q.command.search("buy|sell|exchange")
+                q.command.search("buy|sell|exchange|undo")
                 )
