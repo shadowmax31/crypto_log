@@ -17,3 +17,9 @@ Testing
 
 Deploy
 - Add a way to deploy the project
+
+
+# Installation
+
+> python setup.py bdist_wheel
+> pip install -e .

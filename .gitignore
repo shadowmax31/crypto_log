@@ -1,0 +1,5 @@
+build
+dist
+
+src/crypto.egg-info
+src/__pycache__
