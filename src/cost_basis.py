@@ -24,7 +24,8 @@ class CostBasis:
                 raise Exception("Transaction type [" + row["type"] + "] not implemented") 
 
             if printDetails:
-                msg = str(row.doc_id) + ": "+ row["type"] + " "  + str(row["amount"]) + " " + ticker + " for " + str(row["price"]) + "$"
+                currentCost = round(row["price"] / row["amount"], 2)
+                msg = str(row.doc_id) + ": "+ row["type"] + " "  + str(row["amount"]) + " " + ticker + " for " + str(row["price"]) + "$ (" + str(currentCost) + "$)"
                 if row["description"] is not None:
                     msg += " (" + row["description"] + ")"
 
