@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#/usr/bin/env python
 
 import fire
 from tinydb import TinyDB
@@ -39,7 +39,7 @@ class Crypto(object):
         tbl = self.db.table(table)
         tbl.remove(doc_ids=[docId])
 
-    def buy(self, amount, ticker, price, description=None):
+    def buy(self, date, amount, ticker, price, description):
         """
         Adds info to the cost basis for the specified crypto ticker 
 
@@ -49,17 +49,17 @@ class Crypto(object):
         """
         ticker = ticker.upper()
         transaction = Transaction(self.db)
-        transaction.buy(amount, ticker, price, description)
+        transaction.buy(date, amount, ticker, price, description)
 
-    def sell(self, amount, ticker, forPrice):
+    def sell(self, date, amount, ticker, forPrice, description):
         """
         Tracks details of selling a crypto
         """
         ticker = ticker.upper()
         transaction = Transaction(self.db)
-        transaction.sell(amount, ticker, forPrice)
+        transaction.sell(date, amount, ticker, forPrice, description)
 
-    def exchange(self, fromAmount, fromTicker, toAmount, toTicker, toPrice):
+    def exchange(self, date, fromAmount, fromTicker, toAmount, toTicker, toPrice, description):
         """
         Tracks the value of an exchange (crypto for crypto)
 
@@ -73,7 +73,7 @@ class Crypto(object):
         toTicker = toTicker.upper()
 
         transaction = Transaction(self.db)
-        transaction.exchange(fromAmount, fromTicker, toAmount, toTicker, toPrice)
+        transaction.exchange(date, fromAmount, fromTicker, toAmount, toTicker, toPrice, description)
 
 # Reports
 
