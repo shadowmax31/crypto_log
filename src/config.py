@@ -14,3 +14,7 @@ class Config:
             path = path.replace("~", str(Path.home()))
 
         return path
+
+
+    def dateFormat(self):
+        return self.config["general"]["dateFormat"]

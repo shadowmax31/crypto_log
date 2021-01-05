@@ -97,12 +97,12 @@ class Crypto(object):
         report = Report(self.db)
         report.costBasis(ticker, details)
 
-    def cg(self, details=False):
+    def cg(self, year=None, details=False):
         """
         Returns info about your capital gain or loss
         """
         report = Report(self.db)
-        report.capitalGain(details)
+        report.capitalGain(year, details)
 
     def export(self, all=False, withIds=False):
         """

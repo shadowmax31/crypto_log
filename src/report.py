@@ -1,10 +1,15 @@
+from datetime import datetime
+
 from cost_basis import CostBasis
 from capital_gain import CapitalGain
 from const import GREEN, YELLOW, ENDC, RED, TransactionType
+from tinydb import Query
+from config import Config
 
 class Report:
     def __init__(self, db):
         self.db = db
+        self.config = Config()
 
     def costBasis(self, ticker, details):
         cost = CostBasis(self.db)
@@ -17,8 +22,17 @@ class Report:
 
         print(msg)
 
-    def capitalGain(self, details):
-        table = self.db.table("capital_gain") 
+
+    def capitalGain(self, year, details):
+        if year is None:
+            year = datetime.now().year
+
+        def checkYear(val, year):
+            transactionDate = datetime.strptime(val, self.config.dateFormat()).date()
+            return transactionDate.year == year
+
+        q = Query()
+        table = self.db.table("capital_gain").search(q.date.test(checkYear, year))
 
         capitalGain = 0
         for row in table:
@@ -27,7 +41,9 @@ class Report:
             capitalGain += tmp
 
             if details:
-                print(str(row.doc_id) + ": Capital Gain " + str(tmp) + "$")
+                msg = str(row.doc_id) + " (" + row["date"] + "): Capital Gain " + str(tmp) + "$"
+                msg += " (" + GREEN + row["source_ticker"] + ENDC + " / " + GREEN + "Id: " + str(row["source_id"]) + ENDC + ")"
+                print(msg)
 
         if details and len(table):
             print("")
@@ -38,7 +54,7 @@ class Report:
         elif capitalGain < 0:
             print("You have " + RED + str(abs(capitalGain)) + "$" + ENDC + " of capital losses")
         else:
-            print(GREEN + "You have no capital gains or losses")
+            print(GREEN + "You have no capital gains or losses" + ENDC)
 
     def amount(self, ticker):
         table = self.db.table(ticker)

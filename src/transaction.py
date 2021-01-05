@@ -23,9 +23,12 @@ class Transaction:
 
         table = self.db.table("capital_gain")
         capitalGainId = table.insert({
+            "date": date,
             "cost_basis": tickerBasis,
             "amount": amount,
-            "market_price": price
+            "market_price": price,
+            "source_ticker": ticker,
+            "source_id": tickerTableId
             })
         self.undo.save(ticker, Undo.INSERT, tickerTableId)
         self.undo.save("capital_gain", Undo.INSERT, capitalGainId, 2)
