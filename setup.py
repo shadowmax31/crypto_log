@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="crypto",
-    version="0.0.1",
+    version="0.0.2",
     description="Command line tool to manage crypto transactions",
     license = "MIT",
     url = "https://github.com/shadowmax31/crypto_log",
