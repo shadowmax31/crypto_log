@@ -24,7 +24,7 @@ class CostBasis:
                 raise Exception("Transaction type [" + row["type"] + "] not implemented") 
 
             if printDetails:
-                currentCost = round(row["price"] / row["amount"], 2)
+                currentCost = round(row["price"] / row["amount"], 4)
                 msg = str(row.doc_id) + ": " + row["date"] + " / " + row["type"] + " "  + str(row["amount"]) + " " + ticker + " for " + str(row["price"]) + "$ (" + str(currentCost) + "$)"
                 if row["description"] is not None:
                     msg += " (" + row["description"] + ")"
@@ -37,7 +37,7 @@ class CostBasis:
 
         costBasis = None
         if amount > 0:
-            costBasis = round(totalCost / amount, 2)
+            costBasis = round(totalCost / amount, 4)
         elif amount < 0:
             print(RED + "You have " + str(amount) + " amount of " + ticker + ". Please check your data." + ENDC)
 

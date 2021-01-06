@@ -15,5 +15,5 @@ class CapitalGain:
     
 
     def gain(self):
-        return round(self.marketPrice - self.calculatePurchasePrice(), 2)
+        return round(self.marketPrice - self.calculatePurchasePrice(), 4)
 
