@@ -10,15 +10,13 @@ THIS IS A WORK IN PROGRESS
 > pip install -e .
 
 # TODO
-Base sytem
-- Since we have to work with amounts that have many decimals (0.031235 btc), we should find a way to use the Decimal class for better accuracy
-- Review code
-- Change the table structure. Create a ticker table and put everything in it. This way, we can remove the history table/class and loop through the ticker table to export all the useful data
-
-Reports
-- Give more info when using the details tag with the cg (Capital gain) report
 
 Testing
 - IMPORTANT Add unit tests
 
-
+Base sytem
+- Since we have to work with amounts that have many decimals (0.031235 btc), we should find a way to use the Decimal class for better accuracy;
+- Review code;
+- Change the table structure. Create a ticker table and put everything in it. With this change, we could remove the history table/class and loop through the ticker table to export all the useful data;
+- Find a way to insert data in any order. At the moment, buys and sells have to be entered in the right order;
+- Have a way to change the amount of crypto without changing the cost basis (would be useful to take into account the fees when transfering crypto between wallets);
