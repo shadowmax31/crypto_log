@@ -1,9 +1,9 @@
-import sys
+import sys, subprocess
 from tinydb import Query
 
 class History:
     def __init__(self, db):
-        cmd = " ".join(sys.argv)
+        cmd = "crypto " + subprocess.list2cmdline(sys.argv[1:])
         self.db = db
         self.db.table("history").insert({
             "command": cmd
