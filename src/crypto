@@ -4,6 +4,7 @@ import fire
 from tinydb import TinyDB
 
 from config import Config
+from const import Tables
 from transaction import Transaction
 from report import Report
 from undo import Undo
@@ -18,6 +19,18 @@ class Crypto(object):
         self.db = TinyDB(config.dbPath())
         self.history = History(self.db)
 
+    def list(self):
+        """
+        Lists all the crypto ticker in the database
+        """
+     
+        tables = self.db.tables()
+
+        # Remove all system tables
+        for table in Tables:
+            tables.remove(table.value)
+
+        print(tables)
 
     def undo(self):
         """

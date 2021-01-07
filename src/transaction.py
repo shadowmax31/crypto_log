@@ -1,4 +1,4 @@
-from const import TransactionType
+from const import TransactionType, Tables
 from cost_basis import CostBasis
 from undo import Undo
 
@@ -21,7 +21,7 @@ class Transaction:
         table = self.db.table(ticker)
         tickerTableId = table.insert(self.createTransaction(date, amount, price, description, TransactionType.SELL.name))
 
-        table = self.db.table("capital_gain")
+        table = self.db.table(Tables.CAPITAL_GAIN.value)
         capitalGainId = table.insert({
             "date": date,
             "cost_basis": tickerBasis,

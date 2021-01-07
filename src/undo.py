@@ -1,3 +1,5 @@
+from const import Tables
+
 class Undo:
     INSERT = "insert"
     SKIP = "skip"
@@ -6,7 +8,7 @@ class Undo:
         self.db = db
 
     def save(self, tableName, changeType, docId, numToUndo=1):
-        table = self.db.table("undo")
+        table = self.db.table(Tables.UNDO.value)
 
         table.insert({
             "table": tableName,
@@ -16,7 +18,7 @@ class Undo:
             })
 
     def undo(self):
-        undoTable = self.db.table("undo")
+        undoTable = self.db.table(Tables.UNDO.value)
 
         maxId = 0
         for row in undoTable:

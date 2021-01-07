@@ -2,7 +2,7 @@ from datetime import datetime
 
 from cost_basis import CostBasis
 from capital_gain import CapitalGain
-from const import GREEN, YELLOW, ENDC, RED, TransactionType
+from const import GREEN, YELLOW, ENDC, RED, TransactionType, Tables
 from tinydb import Query
 from config import Config
 
@@ -32,7 +32,7 @@ class Report:
             return transactionDate.year == year
 
         q = Query()
-        table = self.db.table("capital_gain").search(q.date.test(checkYear, year))
+        table = self.db.table(Tables.CAPITAL_GAIN.value).search(q.date.test(checkYear, year))
 
         capitalGain = 0
         for row in table:
