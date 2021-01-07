@@ -58,16 +58,16 @@ class TestTransactions(unittest.TestCase):
         # Test buy after sell
         transaction.buy("2020-01-10", 0.30, "btc", 15000, "Description")
         newCostBasis = cost.calculate("btc", False)
-        self.assertEqual(newCostBasis, 25806.45)
+        self.assertEqual(newCostBasis, 25806.4516)
 
         # Second sell test to check the capital gain with multiple tax events
         transaction.sell("2020-01-11", 0.52, "btc", 1000, "Description")
         newCostBasis = cost.calculate("btc", False)
-        self.assertEqual(newCostBasis, 25806.45)
+        self.assertEqual(newCostBasis, 25806.4516)
 
         # Check the capital gain with multiple tax events / sell
         gain = self.returnCapitalGain(db)
-        self.assertEqual(gain, -5419.35)
+        self.assertEqual(gain, -5419.3547)
 
     def testExchange(self):
         db = TinyDB(storage=MemoryStorage)
