@@ -3,6 +3,8 @@ This is a cli-tool to log and track the Cost Basis and Capital Gain when transac
 
 THIS IS A WORK IN PROGRESS
 
+This uses the ACB method to calculate the cost basis
+
 # Installation
 
 > python setup.py bdist_wheel
@@ -20,3 +22,5 @@ Base sytem
 - Change the table structure. Create a ticker table and put everything in it. With this change, we could remove the history table/class and loop through the ticker table to export all the useful data;
 - Find a way to insert data in any order. At the moment, buys and sells have to be entered in the right order;
 - Have a way to change the amount of crypto without changing the cost basis (would be useful to take into account the fees when transfering crypto between wallets);
+- Add a way to import from the CSV of crypto.com and Shakepay 
+- Add support for the ETH blockchain
