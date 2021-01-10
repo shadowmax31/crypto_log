@@ -8,6 +8,7 @@ This uses the ACB method to calculate the cost basis
 # Installation
 
 > python setup.py bdist_egg
+>
 > pip install -e .
 
 # TODO
