@@ -1,6 +1,8 @@
 from const import RED, ENDC, TransactionType
 from config import Config
 
+from operator import itemgetter
+
 class CostBasis:
     def __init__(self, db):
         self.db = db
@@ -11,7 +13,8 @@ class CostBasis:
 
         amount = 0
         totalCost = 0
-        for row in table:
+
+        for row in sorted(table, key=itemgetter("date")):
             if row["type"] == TransactionType.BUY.name:
                 amount += row["amount"]
                 totalCost += row["price"]
