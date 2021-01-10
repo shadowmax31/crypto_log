@@ -10,11 +10,3 @@ This uses the ACB method to calculate the cost basis
 > python setup.py bdist_egg
 >
 > pip install -e .
-
-# TODO
-
-Testing
-- IMPORTANT Add unit tests
-
-Base sytem
-- Review code;
