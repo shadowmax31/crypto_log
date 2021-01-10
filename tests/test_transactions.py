@@ -90,10 +90,6 @@ class TestTransactions(unittest.TestCase):
         self.assertEqual(gain, -4000)
 
 
-    def testUndo(self):
-        self.assertTrue(False)
-
-
     def initBuy(self, transaction):
         transaction.buy("2020-01-01", 1, "btc", 10000, "Description")
         transaction.buy("2020-01-01", 0.5, "btc", 20000, "Description")
