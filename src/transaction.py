@@ -1,12 +1,16 @@
 from const import TransactionType, Tables
 from cost_basis import CostBasis
 from undo import Undo
+from config import Config
+
+from datetime import datetime
 
 class Transaction:
 
     def __init__(self, db):
         self.db = db
         self.undo = Undo(self.db)
+        self.config = Config()
 
     def buy(self, date, amount, ticker, price, description):
         table = self.db.table(ticker)
@@ -23,7 +27,7 @@ class Transaction:
 
         table = self.db.table(Tables.CAPITAL_GAIN.value)
         capitalGainId = table.insert({
-            "date": date,
+            "date": self.convertStrToDate(date),
             "cost_basis": tickerBasis,
             "amount": amount,
             "market_price": price,
@@ -47,11 +51,18 @@ class Transaction:
         self.undo.save(None, Undo.SKIP, None, 3)
 
     def createTransaction(self, date, amount, price, description, tType):
+
         return {
-            "date": date,
+            "date": self.convertStrToDate(date),
             "amount": amount,
             "price": price,
             "description": description,
             "type": tType
             }
+
+    def convertStrToDate(self, date):
+        if isinstance(date, str):
+            date = datetime.strptime(date, self.config.dateFormat())
+
+        return date
 

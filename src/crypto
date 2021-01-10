@@ -1,7 +1,9 @@
-#/usr/bin/env python
+#!/usr/bin/env python
 
 import fire
 from tinydb import TinyDB
+from tinydb_serialization import SerializationMiddleware
+from serializer.date_time_serializer import DateTimeSerializer
 
 from config import Config
 from const import Tables
@@ -16,7 +18,11 @@ class Crypto(object):
     """
     def __init__(self):
         config = Config()
-        self.db = TinyDB(config.dbPath())
+
+        serialization = SerializationMiddleware()
+        serialization.register_serializer(DateTimeSerializer(), "TinyDateTime")
+        self.db = TinyDB(config.dbPath(), storage=serialization)
+
         self.history = History(self.db)
 
     def list(self):
@@ -54,8 +60,9 @@ class Crypto(object):
 
     def buy(self, date, amount, ticker, price, description):
         """
-        Adds info to the cost basis for the specified crypto ticker 
+        Adds info to the cost basis for the specified crypto ticker
 
+        :param date: The date and time at which the transaction was made
         :param amount: How much of the crypto did you buy?
         :param ticker: Name of the crypto ticker
         :param price: Price you paid for the crypto (including fees)
@@ -67,6 +74,8 @@ class Crypto(object):
     def sell(self, date, amount, ticker, forPrice, description):
         """
         Tracks details of selling a crypto
+
+        :param date: The date and time at which the transaction was made
         """
         ticker = ticker.upper()
         transaction = Transaction(self.db)
@@ -76,6 +85,7 @@ class Crypto(object):
         """
         Tracks the value of an exchange (crypto for crypto)
 
+        :param date: The date and time at which the transaction was made
         :param fromAmount: Amount to remove from fromTicker
         :param fromTicker: crypto that is exchanged for toTicker
         :param toAmount: amount of toTicker you bought with fromTicker

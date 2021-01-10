@@ -10,7 +10,8 @@ setup(
     scripts=["src/crypto"],
     install_requires = [
         "fire",
-        "tinydb"
+        "tinydb",
+        "tinydb-serialization"
     ]
 )
 

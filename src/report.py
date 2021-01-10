@@ -28,8 +28,7 @@ class Report:
             year = datetime.now().year
 
         def checkYear(val, year):
-            transactionDate = datetime.strptime(val, self.config.dateFormat()).date()
-            return transactionDate.year == year
+            return val.year == year
 
         q = Query()
         table = self.db.table(Tables.CAPITAL_GAIN.value).search(q.date.test(checkYear, year))
@@ -41,7 +40,8 @@ class Report:
             capitalGain += tmp
 
             if details:
-                msg = str(row.doc_id) + " (" + row["date"] + "): Capital Gain " + str(tmp) + "$"
+                sDate = row["date"].strftime(self.config.dateFormat())
+                msg = str(row.doc_id) + " (" + sDate + "): Capital Gain " + str(tmp) + "$"
                 msg += " (" + GREEN + row["source_ticker"] + ENDC + " / " + GREEN + "Id: " + str(row["source_id"]) + ENDC + ")"
                 print(msg)
 

@@ -1,8 +1,10 @@
 from const import RED, ENDC, TransactionType
+from config import Config
 
 class CostBasis:
     def __init__(self, db):
         self.db = db
+        self.config = Config()
 
     def calculate(self, ticker, printDetails=False):
         table = self.db.table(ticker)        
@@ -24,8 +26,9 @@ class CostBasis:
                 raise Exception("Transaction type [" + row["type"] + "] not implemented") 
 
             if printDetails:
+                sDate = row["date"].strftime(self.config.dateFormat())
                 currentCost = round(row["price"] / row["amount"], 4)
-                msg = str(row.doc_id) + ": " + row["date"] + " / " + row["type"] + " "  + str(row["amount"]) + " " + ticker + " for " + str(row["price"]) + "$ (" + str(currentCost) + "$)"
+                msg = str(row.doc_id) + ": " + sDate + " / " + row["type"] + " "  + str(row["amount"]) + " " + ticker + " for " + str(row["price"]) + "$ (" + str(currentCost) + "$)"
                 if row["description"] is not None:
                     msg += " (" + row["description"] + ")"
 
