@@ -11,6 +11,7 @@ from transaction import Transaction
 from report import Report
 from undo import Undo
 from history import History
+from util import listTickers
 
 class Crypto(object):
     """ 
@@ -29,24 +30,32 @@ class Crypto(object):
         """
         Lists all the crypto ticker in the database
         """
-     
-        tables = self.db.tables()
 
-        # Remove all system tables
-        for table in Tables:
-            tables.remove(table.value)
+        print(listTickers(self.db))
 
-        print(tables)
 
     def undo(self):
         """
         Undo the last operation
         """
-        confirm = input("Are you sur you want to undo the last change? This will not be reversible [Y/N]: ").upper()
+        stop = False
+        while True:
+            confirm = input("Are you sur you want to undo the last change? This will not be reversible [y/N]: ").upper()
 
-        if confirm == "Y":
-            undo = Undo(self.db)
-            undo.undo()
+            if confirm == "":
+                confirm = "N"
+                
+            if confirm == "Y":
+                undo = Undo(self.db)
+                undo.undo()
+                print("Success!")
+
+            if confirm in ["Y", "N"]:
+                stop = True
+
+            if stop:
+                break
+
 
     def delete(self, table, docId):
         """

@@ -3,7 +3,7 @@ import sys
 from tinydb import TinyDB
 from tinydb.storages import MemoryStorage
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 sys.path.append("../src")
 from transaction import Transaction
@@ -13,43 +13,49 @@ from capital_gain import CapitalGain
 class TestTransactions(unittest.TestCase):
 
     def testBuy(self):
+        date = datetime.now()
         db = TinyDB(storage=MemoryStorage)
 
         transaction = Transaction(db)
-        transaction.buy(datetime.now(), 1, "btc", 10000, "Description")
+        transaction.buy(date, 1, "btc", 10000, "Description")
 
         # Validate the cost basis
         cost = CostBasis(db)
-        value = cost.calculate("btc", False)
+        value = cost.calculate("btc")
         self.assertEqual(value, 10000)
 
-        transaction.buy(datetime.now(), 0.5, "btc", 20000, "Description")
+        date = self.incDate(date)
+        transaction.buy(date, 0.5, "btc", 20000, "Description")
 
         # Validate the cost basis
-        value = cost.calculate("btc", False)
+        value = cost.calculate("btc")
         self.assertEqual(value, 20000)
 
-        # There should be no value in the capital_gain table
-        numTaxEvents = len(db.table("capital_gain"))
-        self.assertEqual(numTaxEvents, 0)
-
     def testBuySell(self):
+        date = datetime.now()
         db = TinyDB(storage=MemoryStorage)
 
         transaction = Transaction(db)
-        self.initBuy(transaction)
+        date = self.initBuy(transaction, date)
 
         cost = CostBasis(db)
-        initialCostBasis = cost.calculate("btc", False)
+        initialCostBasis = cost.calculate("btc")
 
         # Validate cost basis
-        costEth = cost.calculate("eth", False)
+        costEth = cost.calculate("eth")
         self.assertEqual(costEth, 2500)
 
-        transaction.sell(datetime.now(), 0.25, "btc", 12000, "Description")
+        # Test the transaction ordering by date
+        later = date + timedelta(hours=2)
+        transaction.buy(later, 1, "btc", 1000, "Description")
+        costWithLaterTransaction = cost.calculate("btc")
+        self.assertEqual(costWithLaterTransaction, 12400)
+
+        date = self.incDate(date)
+        sellId = transaction.sell(date, 0.25, "btc", 12000, "Description")
 
         # When you sell, the cost basis should not change
-        newCostBasis = cost.calculate("btc", False)
+        newCostBasis = cost.calculate("btc", sellId)
         self.assertEqual(initialCostBasis, newCostBasis)
         self.assertEqual(newCostBasis, 20000)
         
@@ -58,13 +64,15 @@ class TestTransactions(unittest.TestCase):
         self.assertEqual(gain, 7000)
 
         # Test buy after sell
-        transaction.buy(datetime.now(), 0.30, "btc", 15000, "Description")
-        newCostBasis = cost.calculate("btc", False)
+        date = self.incDate(date)
+        docId = transaction.buy(date, 0.30, "btc", 15000, "Description")
+        newCostBasis = cost.calculate("btc", docId)
         self.assertEqual(newCostBasis, 25806.4516)
 
         # Second sell test to check the capital gain with multiple tax events
-        transaction.sell(datetime.now(), 0.52, "btc", 1000, "Description")
-        newCostBasis = cost.calculate("btc", False)
+        date = self.incDate(date)
+        sellId = transaction.sell(date, 0.52, "btc", 1000, "Description")
+        newCostBasis = cost.calculate("btc", sellId)
         self.assertEqual(newCostBasis, 25806.4516)
 
         # Check the capital gain with multiple tax events / sell
@@ -72,17 +80,20 @@ class TestTransactions(unittest.TestCase):
         self.assertEqual(gain, -5419.3547)
 
     def testExchange(self):
+        date = datetime.now()
+
         db = TinyDB(storage=MemoryStorage)
         cost = CostBasis(db)
 
         transaction = Transaction(db)
-        self.initBuy(transaction)
+        date = self.initBuy(transaction, date)
 
-        transaction.exchange(datetime.now(), 0.25, "btc", 1, "eth", 1000, "Description")
+        date = self.incDate(date)
+        transaction.exchange(date, 0.25, "btc", 1, "eth", 1000, "Description")
 
         # Validate the different cost basis after an exchange of crypto
-        costBtc = cost.calculate("btc", False)
-        costEth = cost.calculate("eth", False)
+        costBtc = cost.calculate("btc")
+        costEth = cost.calculate("eth")
         self.assertEqual(costBtc, 20000)
         self.assertEqual(costEth, 2000)
         
@@ -92,19 +103,24 @@ class TestTransactions(unittest.TestCase):
         self.assertEqual(gain, -4000)
 
 
-    def initBuy(self, transaction):
-        transaction.buy(datetime.now(), 1, "btc", 10000, "Description")
-        transaction.buy(datetime.now(), 0.5, "btc", 20000, "Description")
+    def initBuy(self, transaction, date):
+        date = self.incDate(date)
+        transaction.buy(date, 1, "btc", 10000, "Description")
 
-        transaction.buy(datetime.now(), 2, "eth", 5000, "Description")
+        date = self.incDate(date)
+        transaction.buy(date, 0.5, "btc", 20000, "Description")
 
+        date = self.incDate(date)
+        transaction.buy(date, 2, "eth", 5000, "Description")
+
+        return date
+
+    def incDate(self, date):
+        return date + timedelta(minutes=1) 
 
     def returnCapitalGain(self, db):
-        table = db.table("capital_gain")
-        gain = 0
-        for row in table:
-            capitalGain = CapitalGain(db, row)
-            gain += capitalGain.gain()
+        capitalGain = CapitalGain(db)
+        gain = capitalGain.gain(datetime.now().year, False)
 
         return gain
 

@@ -3,7 +3,6 @@ from datetime import datetime
 from cost_basis import CostBasis
 from capital_gain import CapitalGain
 from const import GREEN, YELLOW, ENDC, RED, TransactionType, Tables
-from tinydb import Query
 from config import Config
 
 class Report:
@@ -13,7 +12,7 @@ class Report:
 
     def costBasis(self, ticker, details):
         cost = CostBasis(self.db)
-        costBasis = cost.calculate(ticker, details)
+        costBasis = cost.calculate(ticker, None, details)
 
         if costBasis is not None:
             msg =  "Cost basis for " + ticker + ": " + YELLOW + str(costBasis) + "$" + ENDC
@@ -27,34 +26,24 @@ class Report:
         if year is None:
             year = datetime.now().year
 
-        def checkYear(val, year):
-            return val.year == year
+        cg = CapitalGain(self.db)
+        try:
+            gain = cg.gain(year, details)
+            if details and gain != 0:
+                print("")
+                        
+            gain = round(gain, 2)
+            if gain > 0:
+                print("You have " + YELLOW + str(gain) + "$" + ENDC + " of capital gain")
+            elif gain < 0:
+                print("You have " + RED + str(abs(gain)) + "$" + ENDC + " of capital losses")
+            else:
+                print(GREEN + "You have no capital gains or losses" + ENDC)
+        except Exception as e:
+            print(e)
 
-        q = Query()
-        table = self.db.table(Tables.CAPITAL_GAIN.value).search(q.date.test(checkYear, year))
 
-        capitalGain = 0
-        for row in table:
-            cg = CapitalGain(self.db, row)
-            tmp = cg.gain()
-            capitalGain += tmp
 
-            if details:
-                sDate = row["date"].strftime(self.config.dateFormat())
-                msg = str(row.doc_id) + " (" + sDate + "): Capital Gain " + str(tmp) + "$"
-                msg += " (" + GREEN + row["source_ticker"] + ENDC + " / " + GREEN + "Id: " + str(row["source_id"]) + ENDC + ")"
-                print(msg)
-
-        if details and len(table):
-            print("")
-
-        capitalGain = round(capitalGain, 2)
-        if capitalGain > 0:
-            print("You have " + YELLOW + str(capitalGain) + "$" + ENDC + " of capital gain")
-        elif capitalGain < 0:
-            print("You have " + RED + str(abs(capitalGain)) + "$" + ENDC + " of capital losses")
-        else:
-            print(GREEN + "You have no capital gains or losses" + ENDC)
 
     def amount(self, ticker):
         table = self.db.table(ticker)

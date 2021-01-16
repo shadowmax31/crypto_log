@@ -1,5 +1,4 @@
 from const import TransactionType, Tables
-from cost_basis import CostBasis
 from undo import Undo
 from config import Config
 
@@ -17,30 +16,16 @@ class Transaction:
         docId = table.insert(self.createTransaction(date, amount, price, description, TransactionType.BUY.name))
         self.undo.save(ticker, Undo.INSERT, docId)
 
+        return docId
+
     def sell(self, date, amount, ticker, price, description):
-        cost = CostBasis(self.db)
-        tickerBasis = cost.calculate(ticker)
-
-        # For the cost basis, selling is the same as buying negative amount
         table = self.db.table(ticker)
-        tickerTableId = table.insert(self.createTransaction(date, amount, price, description, TransactionType.SELL.name))
-
-        table = self.db.table(Tables.CAPITAL_GAIN.value)
-        capitalGainId = table.insert({
-            "date": self.convertStrToDate(date),
-            "cost_basis": tickerBasis,
-            "amount": amount,
-            "market_price": price,
-            "source_ticker": ticker,
-            "source_id": tickerTableId
-            })
-        self.undo.save(ticker, Undo.INSERT, tickerTableId)
-        self.undo.save("capital_gain", Undo.INSERT, capitalGainId, 2)
+        docId = table.insert(self.createTransaction(date, amount, price, description, TransactionType.SELL.name))
+        self.undo.save(ticker, Undo.INSERT, docId)
+    
+        return docId
 
     def exchange(self, date, fromAmount, fromTicker, toAmount, toTicker, toPrice, description):
-        cost = CostBasis(self.db)
-        tickerBasis = cost.calculate(fromTicker)
-
         if description is None:
             description = ""
         else:
@@ -51,7 +36,6 @@ class Transaction:
         self.undo.save(None, Undo.SKIP, None, 3)
 
     def createTransaction(self, date, amount, price, description, tType):
-
         return {
             "date": self.convertStrToDate(date),
             "amount": amount,

@@ -34,7 +34,7 @@ class TestUndo(unittest.TestCase):
         self.assertTrue(value == 20000)
         self.assertTrue(valueAfterUndo == 10000)
 
-        # Do an exchange for crypto (this includes a buy and sell) and should trigger capital gain
+        # Do an exchange for crypto (this includes a buy and sell)
         transaction.exchange(datetime.now(), 0.5, "btc", 2, "eth", 1000, "Description")
 
         # Get the new cost basis for eth
@@ -53,7 +53,7 @@ class TestUndo(unittest.TestCase):
         self.assertTrue(cg == 0)
 
         # There should not be any eth anymore 
-        value = cost.calculate("eth", False)
+        value = cost.calculate("eth")
         self.assertTrue(value is None)
 
         
@@ -63,11 +63,8 @@ class TestUndo(unittest.TestCase):
 
 
     def returnCapitalGain(self, db):
-        table = db.table("capital_gain")
-        gain = 0
-        for row in table:
-            capitalGain = CapitalGain(db, row)
-            gain += capitalGain.gain()
+        capitalGain = CapitalGain(db)
+        gain = capitalGain.gain(datetime.now().year, False)
 
         return gain
 
