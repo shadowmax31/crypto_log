@@ -10,6 +10,8 @@ from transaction import Transaction
 from cost_basis import CostBasis
 from capital_gain import CapitalGain
 
+# This unittest will fail if you run two hours before new year. 
+# Just go to bed
 class TestTransactions(unittest.TestCase):
 
     def testBuy(self):
@@ -45,39 +47,64 @@ class TestTransactions(unittest.TestCase):
         costEth = cost.calculate("eth")
         self.assertEqual(costEth, 2500)
 
-        # Test the transaction ordering by date
+
+        # Test the transaction ordering by date (adds a transaction at the end of the list)
         later = date + timedelta(hours=2)
         transaction.buy(later, 1, "btc", 1000, "Description")
         costWithLaterTransaction = cost.calculate("btc")
         self.assertEqual(costWithLaterTransaction, 12400)
 
+
+        # When you sell, the cost basis should not change
         date = self.incDate(date)
         sellId = transaction.sell(date, 0.25, "btc", 12000, "Description")
 
-        # When you sell, the cost basis should not change
-        newCostBasis = cost.calculate("btc", sellId)
+        newCostBasis = cost.calculate("btc", sellId) # The transaction is not the last one
         self.assertEqual(initialCostBasis, newCostBasis)
         self.assertEqual(newCostBasis, 20000)
+        # END - Sell test
         
-        # Test the capital gain
+
+
+        # Test the capital gain (with ordering by date). The buy transaction in 2 hours is ignored
+        # Because the taxable event (sell) happened before
         gain = self.returnCapitalGain(db)
         self.assertEqual(gain, 7000)
+
+
+        # Test earlier buy
+        earlier = date - timedelta(hours=1)
+        transaction.buy(earlier, 1, "btc", 1000, "Description")
+
+        gain = self.returnCapitalGain(db)
+        self.assertEqual(gain, 8900)
+        # END - Test earlier buy
+
+        
 
         # Test buy after sell
         date = self.incDate(date)
         docId = transaction.buy(date, 0.30, "btc", 15000, "Description")
-        newCostBasis = cost.calculate("btc", docId)
-        self.assertEqual(newCostBasis, 25806.4516)
+        newCostBasis = cost.calculate("btc", docId) # The transaction is not the last one
+        self.assertEqual(newCostBasis, 16823.5294)
+
 
         # Second sell test to check the capital gain with multiple tax events
         date = self.incDate(date)
         sellId = transaction.sell(date, 0.52, "btc", 1000, "Description")
-        newCostBasis = cost.calculate("btc", sellId)
-        self.assertEqual(newCostBasis, 25806.4516)
+        newCostBasis = cost.calculate("btc", sellId) # The transaction is not the last one
+        self.assertEqual(newCostBasis, 16823.5294)
+
 
         # Check the capital gain with multiple tax events / sell
         gain = self.returnCapitalGain(db)
-        self.assertEqual(gain, -5419.3547)
+        self.assertEqual(gain, 1151.7646)
+
+
+        # Check the value of cost basis (includes the later/last transaction)
+        laterCost = cost.calculate("btc")
+        self.assertEqual(laterCost, 11601.2425)
+
 
     def testExchange(self):
         date = datetime.now()
