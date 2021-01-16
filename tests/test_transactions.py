@@ -10,7 +10,7 @@ from transaction import Transaction
 from cost_basis import CostBasis
 from capital_gain import CapitalGain
 
-# This unittest will fail if you run two hours before new year. 
+# This unittest will fail if you it run two hours before new year. 
 # Just go to bed
 class TestTransactions(unittest.TestCase):
 
