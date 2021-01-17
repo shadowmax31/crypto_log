@@ -4,6 +4,7 @@ import fire
 from tinydb import TinyDB
 from tinydb_serialization import SerializationMiddleware
 from serializer.date_time_serializer import DateTimeSerializer
+from serializer.decimal_serializer import DecimalSerializer
 
 from config import Config
 from const import Tables
@@ -22,6 +23,7 @@ class Crypto(object):
 
         serialization = SerializationMiddleware()
         serialization.register_serializer(DateTimeSerializer(), "TinyDateTime")
+        serialization.register_serializer(DecimalSerializer(), "TinyDecimal")
         self.db = TinyDB(config.dbPath(), storage=serialization)
 
         self.history = History(self.db)

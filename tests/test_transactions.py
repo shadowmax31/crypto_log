@@ -86,24 +86,24 @@ class TestTransactions(unittest.TestCase):
         date = self.incDate(date)
         docId = transaction.buy(date, 0.30, "btc", 15000, "Description")
         newCostBasis = cost.calculate("btc", docId) # The transaction is not the last one
-        self.assertEqual(newCostBasis, 16823.5294)
+        self.assertEqual(float(newCostBasis), 16823.5294)
 
 
         # Second sell test to check the capital gain with multiple tax events
         date = self.incDate(date)
         sellId = transaction.sell(date, 0.52, "btc", 1000, "Description")
         newCostBasis = cost.calculate("btc", sellId) # The transaction is not the last one
-        self.assertEqual(newCostBasis, 16823.5294)
+        self.assertEqual(float(newCostBasis), 16823.5294)
 
 
         # Check the capital gain with multiple tax events / sell
         gain = self.returnCapitalGain(db)
-        self.assertEqual(gain, 1151.7646)
+        self.assertEqual(float(gain), 1151.7647)
 
 
         # Check the value of cost basis (includes the later/last transaction)
         laterCost = cost.calculate("btc")
-        self.assertEqual(laterCost, 11601.2425)
+        self.assertEqual(float(laterCost), 11601.2425)
 
 
     def testExchange(self):

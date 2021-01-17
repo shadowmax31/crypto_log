@@ -3,6 +3,7 @@ from undo import Undo
 from config import Config
 
 from datetime import datetime
+from decimal import Decimal
 
 class Transaction:
 
@@ -38,8 +39,8 @@ class Transaction:
     def createTransaction(self, date, amount, price, description, tType):
         return {
             "date": self.convertStrToDate(date),
-            "amount": amount,
-            "price": price,
+            "amount": Decimal(str(amount)),
+            "price": Decimal(str(price)),
             "description": description,
             "type": tType
             }
