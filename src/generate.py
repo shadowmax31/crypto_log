@@ -33,7 +33,7 @@ class Generate:
                         if row[3] == "CAD":
                             self.genTransactionString("buy", date, amount, ticker, price)
                         else:
-                            self.comment("This transaction type is not supported", row)
+                            self.comment("This transaction type is not supported. Please add an issue on github.", row)
                     elif row[0] == "peer transfer":
                         self.genTransactionString("buy", date, amount, ticker, price)
                     else:
@@ -56,7 +56,6 @@ class Generate:
         if row is not None:
             if msg != "":
                 msg += ": "
-
             msg += str(row)
 
         print("# " + msg)
