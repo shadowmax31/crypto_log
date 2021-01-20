@@ -118,7 +118,7 @@ class Crypto(object):
         :param path: The path to the file to import
         """
         gen = Generate(self.db, path)
-        gen.fromShakepay()
+        gen.gen()
 
 # Reports
 

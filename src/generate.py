@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime, timezone
+from generate_algo import GenShakePay, GenCryptoDotCom
 
 from config import Config
 
@@ -11,57 +11,35 @@ class Generate:
         self.config = Config()
 
 
-    def fromShakepay(self):
-        # Dates in the CSV are in UTC time (we will convert them to local time)
+    def gen(self):
         with open(self.path, newline="") as csvfile:
-            csvFile = csv.reader(csvfile, delimiter=",", quotechar="\"")
+            csvFile = csv.reader(csvfile, delimiter=",")
+
+            # Skips the header
+            algo = self.algoFactory(next(csvFile))
 
             notUsed = []
-
-            first = True
             print("#!/bin/bash")
             for row in csvFile:
-                if not first:
-                    date = self.convertDate(row[1], "%Y-%m-%dT%H:%M:%S+00")
-                    amount = row[4]
-                    ticker = row[5]
-                    price = row[2]
-                    if price == "":
-                        price = "0"
-
-                    if row[0] == "purchase/sale":
-                        if row[3] == "CAD":
-                            self.genTransactionString("buy", date, amount, ticker, price)
-                        else:
-                            self.comment("This transaction type is not supported. Please add an issue on github.", row)
-                    elif row[0] == "peer transfer":
-                        self.genTransactionString("buy", date, amount, ticker, price)
-                    else:
-                        notUsed.append(row)
-                else:
-                    first = False
+                if not algo.gen(row):
+                    notUsed.append(row)
 
             if len(notUsed) > 0:
                 print("")
-                self.comment("List of transactions that were not used", None)
+                algo.comment("List of transactions that were not used", None)
 
             for row in notUsed:
-                self.comment("", row)
+                algo.comment("", row)
 
 
-    def genTransactionString(self, transactionType, date, amount, ticker, price):
-        print("crypto " + transactionType + " \"" + date + "\" " + amount + " " + ticker + " " + price + " \"" + self.path + "\"")
+    def algoFactory(self, row):
+        algo = None
+        if row[0] == "Transaction Type" or row[1] == "Date" or row[2] == "Amount Debited" or row[3] == "Debit Currency":
+            algo = GenShakePay(self.path)
+        elif row[0] == "Timestamp (UTC)" or row[1] == "Transaction Description" or row[2] == "Currency" or row[3] == "Amount":
+            algo = GenCryptoDotCom(self.path)
+        else:
+            raise Exception("File not supported")
 
-    def comment(self, msg, row):
-        if row is not None:
-            if msg != "":
-                msg += ": "
-            msg += str(row)
+        return algo
 
-        print("# " + msg)
-
-
-    def convertDate(self, sDate, sFormat):
-        date = datetime.strptime(sDate, sFormat).replace(tzinfo=timezone.utc).astimezone(tz=None)
-        return date.strftime(self.config.dateFormat())
-        
