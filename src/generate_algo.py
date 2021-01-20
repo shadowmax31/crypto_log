@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from config import Config
 
-class GenInterface:
+class AbstactGen:
 
 
     def __init__(self, path):
@@ -30,7 +30,7 @@ class GenInterface:
         return date.strftime(self.config.dateFormat())
 
 
-class GenCryptoDotCom(GenInterface):
+class GenCryptoDotCom(AbstactGen):
     
     def gen(self, row):
         found = True
@@ -51,7 +51,7 @@ class GenCryptoDotCom(GenInterface):
         return found
 
 
-class GenShakePay(GenInterface):
+class GenShakePay(AbstactGen):
 
     def gen(self, row):
         found = True
