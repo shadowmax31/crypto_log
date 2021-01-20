@@ -1,4 +1,6 @@
-THIS IS A WORK IN PROGRESS. Changes might break your database
+ALPHA VERSION - THIS IS A WORK IN PROGRESS. 
+
+Changes might break your database.
 
 # crypto_log
 This is a cli-tool to log and track the Cost Basis and Capital Gain when transacting with CryptoCurrency
