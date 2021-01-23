@@ -33,6 +33,12 @@ class TestTransactions(unittest.TestCase):
         value = cost.calculate("btc")
         self.assertEqual(value, 20000)
 
+        # Test add the same date twice
+        transaction.buy(date, 0.2, "btc", 20000, "Description")
+        value = cost.calculate("btc")
+        # The cost basis should not have changed
+        self.assertEqual(value, 20000)
+
     def testBuySell(self):
         date = datetime.now()
         db = TinyDB(storage=MemoryStorage)
@@ -69,6 +75,13 @@ class TestTransactions(unittest.TestCase):
         # Test the capital gain (with ordering by date). The buy transaction in 2 hours is ignored
         # Because the taxable event (sell) happened before
         gain = self.returnCapitalGain(db)
+        self.assertEqual(gain, 7000)
+
+
+        # Test sell the same date twice
+        transaction.sell(date, 0.11, "btc", 12000, "Description")
+        gain = self.returnCapitalGain(db)
+        # The capital gain should not have changed
         self.assertEqual(gain, 7000)
 
 

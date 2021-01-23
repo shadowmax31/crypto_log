@@ -13,18 +13,26 @@ class Transaction:
         self.config = Config()
 
     def buy(self, date, amount, ticker, price, description):
-        table = self.db.table(ticker)
-        docId = table.insert(self.createTransaction(date, amount, price, description, TransactionType.BUY.name))
-        self.undo.save(ticker, Undo.INSERT, docId)
+        docId = None
+
+        if not self.transactionExists(date, ticker):
+            table = self.db.table(ticker)
+            docId = table.insert(self.createTransaction(date, amount, price, description, TransactionType.BUY.name))
+            self.undo.save(ticker, Undo.INSERT, docId)
 
         return docId
 
+    
     def sell(self, date, amount, ticker, price, description):
-        table = self.db.table(ticker)
-        docId = table.insert(self.createTransaction(date, amount, price, description, TransactionType.SELL.name))
-        self.undo.save(ticker, Undo.INSERT, docId)
+        docId = None
+
+        if not self.transactionExists(date, ticker):
+            table = self.db.table(ticker)
+            docId = table.insert(self.createTransaction(date, amount, price, description, TransactionType.SELL.name))
+            self.undo.save(ticker, Undo.INSERT, docId)
     
         return docId
+
 
     def exchange(self, date, fromAmount, fromTicker, toAmount, toTicker, toPrice, description):
         if description is None:
@@ -36,6 +44,7 @@ class Transaction:
         self.buy(date, toAmount, toTicker, toPrice, description + "Bought with " + fromTicker)
         self.undo.save(None, Undo.SKIP, None, 3)
 
+
     def createTransaction(self, date, amount, price, description, tType):
         return {
             "date": self.convertStrToDate(date),
@@ -44,6 +53,22 @@ class Transaction:
             "description": description,
             "type": tType
             }
+
+
+    def transactionExists(self, date, ticker):
+        date = self.convertStrToDate(date)
+        table = self.db.table(ticker)
+
+        exists = False
+        for row in table:
+            if row["date"] == date:
+                exists = True
+                break
+
+        if exists:
+            print("The transaction already exists (" + ticker + " : " + str(date) + ")")
+
+        return exists
 
     def convertStrToDate(self, date):
         if isinstance(date, str):
