@@ -5,6 +5,7 @@ from config import Config
 from datetime import datetime
 from decimal import Decimal
 
+
 class Transaction:
 
     def __init__(self, db):
@@ -55,7 +56,7 @@ class Transaction:
             }
 
 
-    def transactionExists(self, date, ticker):
+    def transactionExists(self, date, ticker, silent=False):
         date = self.convertStrToDate(date)
         table = self.db.table(ticker)
 
@@ -65,7 +66,7 @@ class Transaction:
                 exists = True
                 break
 
-        if exists:
+        if exists and not silent:
             print("The transaction already exists (" + ticker + " : " + str(date) + ")")
 
         return exists

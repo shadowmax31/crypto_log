@@ -35,9 +35,9 @@ class Generate:
     def algoFactory(self, row):
         algo = None
         if row[0] == "Transaction Type" or row[1] == "Date" or row[2] == "Amount Debited" or row[3] == "Debit Currency":
-            algo = GenShakePay(self.path)
+            algo = GenShakePay(self.path, self.db)
         elif row[0] == "Timestamp (UTC)" or row[1] == "Transaction Description" or row[2] == "Currency" or row[3] == "Amount":
-            algo = GenCryptoDotCom(self.path)
+            algo = GenCryptoDotCom(self.path, self.db)
         else:
             raise Exception("File not supported")
 

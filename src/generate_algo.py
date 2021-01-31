@@ -1,20 +1,29 @@
 from datetime import datetime, timezone
 from decimal import Decimal
+from transaction import Transaction
 
 from config import Config
 
 class AbstactGen:
 
 
-    def __init__(self, path):
+    def __init__(self, path, db):
         self.config = Config()
         self.path = path
+        self.transaction = Transaction(db)
+
 
     def gen(self, row):
         pass
 
+
     def genTransactionString(self, transactionType, date, amount, ticker, price):
-        print("crypto " + transactionType + " \"" + date + "\" " + str(amount) + " " + ticker + " " + str(price) + " \"" + self.path + "\"")
+        msg = ""
+        if self.transaction.transactionExists(date, ticker, True):
+            msg = "# The transaction exists -- "
+
+        print(msg + "crypto " + transactionType + " \"" + date + "\" " + str(amount) + " " + ticker + " " + str(price) + " \"" + self.path + "\"")
+
 
     def comment(self, msg, row):
         if row is not None:
