@@ -25,6 +25,7 @@ class Crypto(object):
         serialization = SerializationMiddleware()
         serialization.register_serializer(DateTimeSerializer(), "TinyDateTime")
         serialization.register_serializer(DecimalSerializer(), "TinyDecimal")
+
         self.db = TinyDB(config.dbPath(), storage=serialization)
 
         self.history = History(self.db)
