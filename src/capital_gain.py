@@ -31,8 +31,10 @@ class CapitalGain:
 
                     if details:
                         sDate = row["date"].strftime(self.config.dateFormat())
-                        msg = sDate + ": Capital Gain " + str(tmp) + "$"
-                        msg += " (" + GREEN + ticker + ENDC + " / " + GREEN + "Id: " + str(row.doc_id) + ENDC + ")"
+                        msg = sDate + ": "
+                        msg += GREEN + ticker + "_" + str(row.doc_id).zfill(4) + ENDC
+                        msg += " - Capital Gain " + str(tmp) + "$"
+                        msg += " (" + str(row["price"]) + "$)"
                         print(msg)
 
         return gain
