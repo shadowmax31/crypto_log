@@ -71,6 +71,7 @@ class Crypto(object):
         tbl = self.db.table(table)
         tbl.remove(doc_ids=[docId])
 
+
     def buy(self, date, amount, ticker, price, description):
         """
         Adds info to the cost basis for the specified crypto ticker
@@ -79,16 +80,22 @@ class Crypto(object):
         :param amount: How much of the crypto did you buy?
         :param ticker: Name of the crypto ticker
         :param price: Price you paid for the crypto (including fees)
+        :param description: The description of the transaction
         """
         ticker = ticker.upper()
         transaction = Transaction(self.db)
         transaction.buy(date, amount, ticker, price, description)
+
 
     def sell(self, date, amount, ticker, forPrice, description):
         """
         Tracks details of selling a crypto
 
         :param date: The date and time at which the transaction was made
+        :param amount: How much of the crypto did you sell?
+        :param ticker: Name of the crypto ticker
+        :param forPrice: The price you sold the crypto for
+        :param description: The description of the transaction
         """
         ticker = ticker.upper()
         transaction = Transaction(self.db)
@@ -104,6 +111,7 @@ class Crypto(object):
         :param toAmount: amount of toTicker you bought with fromTicker
         :param toTicker: the new crypto that was bought
         :param toPrice: the current price (in fiat currency) for the amount of crypto (toTicker) that was bought
+        :param description: The description of the transaction
         """
         fromTicker = fromTicker.upper()
         toTicker = toTicker.upper()
@@ -114,7 +122,7 @@ class Crypto(object):
         
     def generate(self, path):
         """
-        Import a file from any supported exchange
+        Import a file from any supported exchange (the app supports ShakePay and Crypto.com)
 
         :param path: The path to the file to import
         """
@@ -137,6 +145,9 @@ class Crypto(object):
     def cost(self, ticker, details=False):
         """
         Returns the cost basis of the specified ticker
+
+        :param ticker: Crypto ticker
+        :param details: Use this parameter if you want more details on the report
         """
         ticker = ticker.upper()
 
@@ -146,6 +157,9 @@ class Crypto(object):
     def cg(self, year=None, details=False):
         """
         Returns info about your capital gain or loss
+
+        :param year: Choose the related year for the capital gain (current year by detault)
+        :param details: Use this parameter if you want more details on the report
         """
         report = Report(self.db)
         report.capitalGain(year, details)
@@ -153,6 +167,9 @@ class Crypto(object):
     def export(self, all=False, withIds=False):
         """
         Exports the history of transaction in the current database
+
+        :param all: Returns all the interactions in the history
+        :param withIds: Adds the id of the related document in the report
         """
         report = Report(self.db)
         report.history(self.history, all, withIds)
