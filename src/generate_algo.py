@@ -52,11 +52,15 @@ class GenNewton(AbstractGen):
             if price == "":
                 price = "0"
 
-            self.genTransactionString("buy", date, amount, ticker, price)
+            if row[3] == "CAD":
+                self.genTransactionString("buy", date, amount, ticker, price)
+            else:
+                self.comment("This transaction type is not supported. Please add an issue on github.", row)
         else:
             found = False
 
         return found
+
 
 class GenCryptoDotCom(AbstractGen):
     
