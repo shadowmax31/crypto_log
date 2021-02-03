@@ -122,7 +122,7 @@ class Crypto(object):
         
     def generate(self, path):
         """
-        Import a file from any supported exchange (the app supports ShakePay and Crypto.com)
+        Import a file from any supported exchange (the app supports ShakePay, Crypto.com and Newton)
 
         :param path: The path to the file to import
         """

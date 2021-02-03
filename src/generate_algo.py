@@ -4,7 +4,7 @@ from transaction import Transaction
 
 from config import Config
 
-class AbstactGen:
+class AbstractGen:
 
 
     def __init__(self, path, db):
@@ -34,12 +34,31 @@ class AbstactGen:
         print("# " + msg)
 
 
-    def convertDate(self, sDate, sFormat):
-        date = datetime.strptime(sDate, sFormat).replace(tzinfo=timezone.utc).astimezone(tz=None)
+    def convertDate(self, sDate, sFormat, pTimezone=timezone.utc):
+        date = datetime.strptime(sDate, sFormat).replace(tzinfo=pTimezone).astimezone(tz=None)
         return date.strftime(self.config.dateFormat())
 
 
-class GenCryptoDotCom(AbstactGen):
+class GenNewton(AbstractGen):
+
+    def gen(self, row):
+        found = True
+        
+        if row[1] == "TRADE":
+            date = self.convertDate(row[0], "%d/%m/%Y %H:%M:%S", None)
+            amount = row[4]
+            ticker = row[5]
+            price = row[2]
+            if price == "":
+                price = "0"
+
+            self.genTransactionString("buy", date, amount, ticker, price)
+        else:
+            found = False
+
+        return found
+
+class GenCryptoDotCom(AbstractGen):
     
     def gen(self, row):
         found = True
@@ -60,7 +79,7 @@ class GenCryptoDotCom(AbstactGen):
         return found
 
 
-class GenShakePay(AbstactGen):
+class GenShakePay(AbstractGen):
 
     def gen(self, row):
         found = True

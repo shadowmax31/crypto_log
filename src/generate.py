@@ -1,5 +1,5 @@
 import csv
-from generate_algo import GenShakePay, GenCryptoDotCom
+from generate_algo import GenShakePay, GenCryptoDotCom, GenNewton
 
 from config import Config
 
@@ -38,6 +38,8 @@ class Generate:
             algo = GenShakePay(self.path, self.db)
         elif row[0] == "Timestamp (UTC)" or row[1] == "Transaction Description" or row[2] == "Currency" or row[3] == "Amount":
             algo = GenCryptoDotCom(self.path, self.db)
+        elif row[0] == "Date" or row[1] == "Type" or row[2] == "Received Quantity" or row[3] == "Received Currency":
+            algo = GenNewton(self.path, self.db)
         else:
             raise Exception("File not supported")
 
