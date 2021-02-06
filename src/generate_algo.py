@@ -24,6 +24,15 @@ class AbstractGen:
 
         print(msg + "crypto " + transactionType + " \"" + date + "\" " + str(amount) + " " + ticker + " " + str(price) + " \"" + self.path + "\"")
 
+    
+    def genTransactionExchangeString(self, date, amount, ticker, toAmount, toTicker, forPrice):
+        msg = ""
+        if self.transaction.transactionExists(date, ticker, True):
+            msg = "# The transaction exists -- "
+
+        print(msg + "crypto exchange" + " \"" + date + "\" " + str(amount) + " " + ticker + " " + 
+                str(toAmount) + " " + toTicker + " " + str(forPrice) + " \"" + self.path + "\"")
+
 
     def comment(self, msg, row):
         if row is not None:
@@ -45,7 +54,7 @@ class GenNewton(AbstractGen):
         found = True
         
         if row[1] == "TRADE":
-            date = self.convertDate(row[0], "%d/%m/%Y %H:%M:%S", None)
+            date = self.convertDate(row[0], "%m/%d/%Y %H:%M:%S", None)
             amount = row[4]
             ticker = row[5]
             price = row[2]
@@ -75,8 +84,13 @@ class GenCryptoDotCom(AbstractGen):
 
         if row[9] == "reimbursement" or row[9] == "referral_card_cashback":
             self.genTransactionString("buy", date, amount, ticker, 0)
-        elif row[9] == "card_top_up":
+        elif row[9] == "card_top_up" or row[9] == "crypto_transfer":
             self.genTransactionString("sell", date, abs(Decimal(amount)), ticker, abs(Decimal(price)))
+        elif row[9] == "crypto_exchange":
+            toAmount = row[5]
+            toTicker = row[4]
+
+            self.genTransactionExchangeString(date, abs(Decimal(amount)), ticker, toAmount, toTicker, abs(Decimal(price)))
         else:
             found = False
 
