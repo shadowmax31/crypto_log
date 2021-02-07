@@ -71,6 +71,7 @@ class Transaction:
 
         return exists
 
+
     def convertStrToDate(self, date):
         if isinstance(date, str):
             date = datetime.strptime(date, self.config.dateFormat())

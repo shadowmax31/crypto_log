@@ -17,6 +17,7 @@ class AbstractGen:
         pass
 
 
+    # Generate the transaction (buy or sell) command
     def genTransactionString(self, transactionType, date, amount, ticker, price):
         msg = ""
         if self.transaction.transactionExists(date, ticker, True):
@@ -25,6 +26,7 @@ class AbstractGen:
         print(msg + "crypto " + transactionType + " \"" + date + "\" " + str(amount) + " " + ticker + " " + str(price) + " \"" + self.path + "\"")
 
     
+    # Generate the exchange transaction  command
     def genTransactionExchangeString(self, date, amount, ticker, toAmount, toTicker, forPrice):
         msg = ""
         if self.transaction.transactionExists(date, ticker, True):

@@ -13,9 +13,10 @@ class Generate:
 
     def gen(self):
         with open(self.path, newline="") as csvfile:
+            # Opens the CSV file
             csvFile = csv.reader(csvfile, delimiter=",")
 
-            # Skips the header
+            # next --> Skips the header (first row)
             algo = self.algoFactory(next(csvFile))
 
             notUsed = []
@@ -32,6 +33,7 @@ class Generate:
                 algo.comment("", row)
 
 
+    # Picks the right class to import the CSV
     def algoFactory(self, row):
         algo = None
         if row[0] == "Transaction Type" or row[1] == "Date" or row[2] == "Amount Debited" or row[3] == "Debit Currency":

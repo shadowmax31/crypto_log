@@ -7,7 +7,7 @@ RED = '\033[91m'
 ENDC = '\033[0m'
 BOLD = '\033[1m'
 
-# Name of the tables
+# Name of the system tables
 class Tables(Enum):
     UNDO = "undo"
     CAPITAL_GAIN = "capital_gain"

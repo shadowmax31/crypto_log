@@ -17,14 +17,17 @@ class CapitalGain:
         
         gain = 0
         for ticker in listTickers(self.db):
+            # Loop through all tickers
             def checkYear(val, year):
                 return val.year == year
 
+            # Filter the data for the current year
             q = Query()
             table = self.db.table(ticker).search(q.date.test(checkYear, year))
 
             for row in sorted(table, key=itemgetter("date")):
                 tmp = None
+                # A sell transaction is the only taxable event
                 if(row["type"] == TransactionType.SELL.name):
                     tmp = self.calculateGain(ticker, row)
                     gain += tmp
@@ -46,7 +49,6 @@ class CapitalGain:
         if costBasis is None:
             raise Exception(BOLD + YELLOW + "The capital gain cannot be calculated accurately" + ENDC)
             
-
         value = taxableEvent["price"] - (costBasis * taxableEvent["amount"])
 
         return round(value, 4)

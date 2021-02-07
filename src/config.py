@@ -1,6 +1,7 @@
 from pathlib import Path
 from configparser import ConfigParser
 
+# Class that read the config file
 class Config:
     def __init__(self):
         self.config = ConfigParser()
