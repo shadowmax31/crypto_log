@@ -13,3 +13,5 @@ This uses the ACB method to calculate the cost basis
 >
 > pip install -e .
 
+## For more details check the wiki
+https://github.com/shadowmax31/crypto_log/wiki
