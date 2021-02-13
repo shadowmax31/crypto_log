@@ -84,14 +84,17 @@ class GenCryptoDotCom(AbstractGen):
         if price == "":
             price = "0"
 
+        toTicker = row[4]
+        toAmount = row[5]
+
         if row[9] == "reimbursement" or row[9] == "referral_card_cashback":
             self.genTransactionString("buy", date, amount, ticker, 0)
+        elif row[9] == "viban_purchase":
+            self.genTransactionString("buy", date, toAmount, toTicker, price)
+            self.comment("Check this transaction ^", None)
         elif row[9] == "card_top_up" or row[9] == "crypto_transfer":
             self.genTransactionString("sell", date, abs(Decimal(amount)), ticker, abs(Decimal(price)))
         elif row[9] == "crypto_exchange":
-            toAmount = row[5]
-            toTicker = row[4]
-
             self.genTransactionExchangeString(date, abs(Decimal(amount)), ticker, toAmount, toTicker, abs(Decimal(price)))
         else:
             found = False
