@@ -87,7 +87,7 @@ class GenCryptoDotCom(AbstractGen):
         toTicker = row[4]
         toAmount = row[5]
 
-        if row[9] == "reimbursement" or row[9] == "referral_card_cashback":
+        if row[9] == "reimbursement" or row[9] == "referral_card_cashback" or row[9] == "crypto_earn_interest_paid":
             self.genTransactionString("buy", date, amount, ticker, 0)
         elif row[9] == "viban_purchase":
             self.genTransactionString("buy", date, toAmount, toTicker, price)
