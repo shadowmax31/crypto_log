@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 from transaction import Transaction
+from const import RED, ENDC, YELLOW
 
 from config import Config
 
@@ -24,8 +25,7 @@ class AbstractGen:
             msg = "# The transaction exists -- "
 
         print(msg + "crypto " + transactionType + " \"" + date + "\" " + str(amount) + " " + ticker + " " + str(price) + " \"" + self.path + "\"")
-
-    
+ 
     # Generate the exchange transaction command
     def genTransactionExchangeString(self, date, amount, ticker, toAmount, toTicker, forPrice):
         msg = ""
@@ -36,13 +36,23 @@ class AbstractGen:
                 str(toAmount) + " " + toTicker + " " + str(forPrice) + " \"" + self.path + "\"")
 
 
+    def echo(self, msg, row):
+        msg = self.addRowToMsg(msg, row)
+
+        print("echo \"" + msg + "\"")
+
     def comment(self, msg, row):
+        msg = self.addRowToMsg(msg, row)
+
+        print("# " + msg)
+
+    def addRowToMsg(self, msg, row):
         if row is not None:
             if msg != "":
                 msg += ": "
             msg += str(row)
 
-        print("# " + msg)
+        return msg
 
 
     def convertDate(self, sDate, sFormat, pTimezone=timezone.utc):
@@ -96,6 +106,14 @@ class GenCryptoDotCom(AbstractGen):
             self.genTransactionString("sell", date, abs(Decimal(amount)), ticker, abs(Decimal(price)))
         elif row[9] == "crypto_exchange":
             self.genTransactionExchangeString(date, abs(Decimal(amount)), ticker, toAmount, toTicker, abs(Decimal(price)))
+        elif row[9] == "dust_conversion_credited" or row[9] == "dust_conversion_debited":
+            if not self.transaction.transactionExists(date, ticker, True):
+                self.echo("", row)
+                self.echo(RED + "^ Please insert this row manually, this is not supported yet" + ENDC, None)
+                self.echo(YELLOW + "Use this date: " + date + ENDC, None)
+                self.echo("", None)
+            else:
+                self.comment("The transaction exists", row)
         else:
             found = False
 

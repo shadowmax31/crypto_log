@@ -66,6 +66,7 @@ class Transaction:
                 exists = True
                 break
 
+
         if exists and not silent:
             print("The transaction already exists (" + ticker + " : " + str(date) + ")")
 
