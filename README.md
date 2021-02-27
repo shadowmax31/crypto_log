@@ -1,9 +1,10 @@
 ALPHA VERSION - THIS IS A WORK IN PROGRESS. 
 
-Changes might break your database.
+Changes might break your database and there might still be bugs. 
+Please contact me, if you want to work on this project with me
 
 # crypto_log
-This is a cli-tool to log and track the Cost Basis and Capital Gain when transacting with CryptoCurrency
+This is a cli-tool to log and track the Cost Basis and Capital Gain when transacting with CryptoCurrency.
 
 This uses the ACB method to calculate the cost basis
 
