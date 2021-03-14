@@ -27,9 +27,10 @@ class CapitalGain:
 
             for row in sorted(table, key=itemgetter("date")):
                 tmp = None
+                costBasis = None
                 # A sell transaction is the only taxable event
                 if(row["type"] == TransactionType.SELL.name):
-                    tmp = self.calculateGain(ticker, row)
+                    tmp, costBasis = self.calculateGain(ticker, row)
                     gain += tmp
 
                     if details:
@@ -37,7 +38,7 @@ class CapitalGain:
                         msg = sDate + ": "
                         msg += GREEN + ticker + "_" + str(row.doc_id).zfill(4) + ENDC
                         msg += " - Capital Gain " + str(tmp) + "$"
-                        msg += " (" + str(row["price"]) + "$)"
+                        msg += " (Value sold / Cost basis: " + str(row["price"]) + "$ / " + str(costBasis) + "$)"
                         print(msg)
 
         return gain
@@ -49,6 +50,7 @@ class CapitalGain:
         if costBasis is None:
             raise Exception(BOLD + YELLOW + "The capital gain cannot be calculated accurately" + ENDC)
             
-        value = taxableEvent["price"] - (costBasis * taxableEvent["amount"])
+        costBasisForTransaction = costBasis * taxableEvent["amount"]
+        value = taxableEvent["price"] - (costBasisForTransaction)
 
-        return round(value, 4)
+        return round(value, 4), round(costBasisForTransaction, 4)
