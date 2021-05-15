@@ -102,7 +102,7 @@ class GenCryptoDotCom(AbstractGen):
         elif row[9] == "viban_purchase":
             self.genTransactionString("buy", date, toAmount, toTicker, price)
             self.comment("Check this transaction ^", None)
-        elif row[9] == "card_top_up" or row[9] == "crypto_transfer":
+        elif row[9] == "card_top_up" or row[9] == "crypto_transfer" or (row[9] == "crypto_viban_exchange" and toTicker == "CAD"):
             self.genTransactionString("sell", date, abs(Decimal(amount)), ticker, abs(Decimal(price)))
         elif row[9] == "crypto_exchange":
             self.genTransactionExchangeString(date, abs(Decimal(amount)), ticker, toAmount, toTicker, abs(Decimal(price)))
