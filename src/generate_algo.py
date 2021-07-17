@@ -139,6 +139,8 @@ class GenShakePay(AbstractGen):
                 self.comment("This transaction type is not supported. Please add an issue on github.", row)
         elif row[0] == "peer transfer":
             self.genTransactionString("buy", date, amount, ticker, price)
+        elif row[0] == "shakingsats":
+            self.genTransactionString("buy", date, amount, ticker, 0)
         else:
             found = False
 
