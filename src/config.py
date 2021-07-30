@@ -19,3 +19,11 @@ class Config:
 
     def dateFormat(self):
         return self.config["general"]["dateFormat"]
+
+
+    def coinMarketCapKey(self):
+        return self.config["general"]["coinMarketCapKey"]
+
+
+    def currency(self):
+        return self.config["general"]["currency"]

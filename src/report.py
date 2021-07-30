@@ -1,27 +1,61 @@
 from datetime import datetime
+from decimal import Decimal
 
 from cost_basis import CostBasis
 from capital_gain import CapitalGain
+from crypto_api import CryptoApi
 from amount import Amount
-from const import GREEN, YELLOW, ENDC, RED, Tables
+from const import GREEN, YELLOW, ENDC, RED
 from config import Config
 
 class Report:
     def __init__(self, db):
         self.db = db
         self.config = Config()
+        self.api = CryptoApi()
 
     def costBasis(self, ticker, details):
+
+        amount = Amount(self.db).calculate(ticker)
         cost = CostBasis(self.db)
         costBasis = cost.calculate(ticker, None, details)
-        realCost = round(costBasis * Amount(self.db).calculate(ticker), 2)
+        realCost = round(costBasis * amount, 2)
+
+        realValue = None
+        gainLoss = None
+        try:
+            currentPrice = self.api.getPrice(ticker)
+            if currentPrice is not None:
+                realValue = round(currentPrice * amount, 2)
+                gainLoss = realValue - Decimal(realCost)
+        except:
+            pass
+
 
         if costBasis is not None:
-            msg =  "Cost basis for " + ticker + ": " + YELLOW + str(costBasis) + "$" + ENDC + " (" + str(realCost) + "$)"
+            msg =  "Cost basis for " + ticker + ": " + YELLOW + str(costBasis) + "$" + ENDC + "\n" 
+            msg += "        Current cost:   " + str(realCost) + "$\n"
+
+            if realValue is None or gainLoss is None:
+                sRealValue = RED + "UNKNOWN" + ENDC
+            else:
+                sRealValue = str(realValue) + "$ (" + self.formatGainLoss(gainLoss) + ")"
+
+            msg += "        Current value:  " + sRealValue
         else:
             msg = "No " + ticker + " found"
 
         print(msg)
+
+
+    def formatGainLoss(self, value):
+        sign = ""
+        if value > 0:
+            sign = GREEN + "+"
+        else:
+            sign = RED
+
+        return sign + str(value) + "$" + ENDC 
 
 
     def capitalGain(self, year, details):

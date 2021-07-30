@@ -8,7 +8,6 @@ from serializer.decimal_serializer import DecimalSerializer
 from generate import Generate
 
 from config import Config
-from const import Tables
 from transaction import Transaction
 from report import Report
 from undo import Undo

@@ -11,7 +11,8 @@ setup(
     install_requires = [
         "fire",
         "tinydb",
-        "tinydb-serialization"
+        "tinydb-serialization",
+        "requests"
     ]
 )
 
