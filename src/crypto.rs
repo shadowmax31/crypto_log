@@ -1,27 +1,41 @@
+use clap::ArgMatches;
 use rental_rod::db::Db;
 use uuid::Uuid;
 
-use crate::{config::Config, transaction::Transaction, error::CryptoError};
+use crate::util::config::Config;
+use crate::transaction::Transaction;
+use crate::util::error::CryptoError;
 
-pub struct Crypto<'a> {
-    db: &'a mut Db,
-    config: &'a Config
+pub struct Crypto {
+    db: Db,
+    config: Config
 }
 
-impl<'a> Crypto<'a> {
+impl Crypto {
     /**
     This tool is for tracking your crypto transactions. 
     It tracks the cost basis for any crypto and the capital gain
     */
-    pub fn new(db: &'a mut Db, config: &'a Config) -> Crypto<'a> {
-        Crypto { db, config }
+    pub fn new() -> Result<Crypto, CryptoError> {
+        let config = Config::new()?;
+
+        let path = config.db_path()?;
+        let db = Db::new(&path)?;
+
+        Ok(Crypto { db, config })
     }
     
     /**
     Lists all the crypto ticker in the database
     */
-    pub fn list(&self) {
-        // print(listTickers(self.db))
+    pub fn list(&self) -> Result<(), CryptoError> {
+        let tables = crate::util::helper::list_tickers(&self.db)?;
+
+        for table in tables {
+            println!("{}", table);
+        }
+
+        Ok(())
     }
     
     /**
@@ -42,10 +56,14 @@ impl<'a> Crypto<'a> {
     :param price: Price you paid for the crypto (including fees)
     :param description: The description of the transaction
     */
-    pub fn buy(&mut self, date: &str, amount: &str, ticker: &str, price: &str, description: &str) -> Result<(), CryptoError> {
-        let ticker = ticker.to_uppercase();
-        let transaction = Transaction::new(&mut self.db, self.config);
+    pub fn buy(&mut self, args: &ArgMatches) -> Result<(), CryptoError> {
+        let date = args.value_of("date").unwrap();
+        let amount = args.value_of("amount").unwrap();
+        let ticker = args.value_of("ticker").unwrap().to_uppercase();
+        let price = args.value_of("price").unwrap();
+        let description = args.value_of("description").unwrap();
 
+        let transaction = Transaction::new(&mut self.db, &self.config);
         transaction.buy(date, amount, &ticker, price, description)
     }
     

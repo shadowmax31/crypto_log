@@ -1,10 +1,11 @@
 use std::str::FromStr;
 
-use chrono::{DateTime, Utc, NaiveDateTime, TimeZone, Local, FixedOffset};
+use chrono::{DateTime, Utc, NaiveDateTime, TimeZone, Local};
 use rental_rod::db::{Db, line::Line, field_type::Type};
 use rust_decimal::Decimal;
 
-use crate::{config::Config, error::CryptoError};
+use crate::util::config::Config;
+use crate::util::error::CryptoError;
 
 use self::transaction_type::TransactionType;
 
