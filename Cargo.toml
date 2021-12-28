@@ -1,9 +1,12 @@
 [package]
-name = "crypto_log"
+name = "crypto"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-"rental_rod" = "0.1.0"
+rental_rod = "0.1.0"
+uuid = { version = "0.8", features = ["v4"] }
+clap = "2.34.0"
+configparser = "3.0.0"
