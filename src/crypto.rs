@@ -1,24 +1,20 @@
+use rental_rod::db::Db;
 use uuid::Uuid;
 
-struct Crypto {
-    
+use crate::{config::Config, transaction::Transaction, error::CryptoError};
+
+pub struct Crypto<'a> {
+    db: &'a mut Db,
+    config: &'a Config
 }
 
-impl Crypto {
+impl<'a> Crypto<'a> {
     /**
     This tool is for tracking your crypto transactions. 
     It tracks the cost basis for any crypto and the capital gain
     */
-    pub fn new() {
-        // config = Config()
-        
-        // serialization = SerializationMiddleware()
-        // serialization.register_serializer(DateTimeSerializer(), "TinyDateTime")
-        // serialization.register_serializer(DecimalSerializer(), "TinyDecimal")
-        
-        // self.db = TinyDB(config.dbPath(), storage=serialization)
-        
-        // self.history = History(self.db)
+    pub fn new(db: &'a mut Db, config: &'a Config) -> Crypto<'a> {
+        Crypto { db, config }
     }
     
     /**
@@ -46,10 +42,11 @@ impl Crypto {
     :param price: Price you paid for the crypto (including fees)
     :param description: The description of the transaction
     */
-    pub fn buy(&self, date: &str, amount: &str, ticker: &str, price: &str, description: &str) {
-        // ticker = ticker.upper()
-        // transaction = Transaction(self.db)
-        // transaction.buy(date, amount, ticker, price, description)
+    pub fn buy(&mut self, date: &str, amount: &str, ticker: &str, price: &str, description: &str) -> Result<(), CryptoError> {
+        let ticker = ticker.to_uppercase();
+        let transaction = Transaction::new(&mut self.db, self.config);
+
+        transaction.buy(date, amount, &ticker, price, description)
     }
     
     

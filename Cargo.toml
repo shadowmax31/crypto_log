@@ -10,3 +10,7 @@ rental_rod = "0.1.0"
 uuid = { version = "0.8", features = ["v4"] }
 clap = "2.34.0"
 configparser = "3.0.0"
+home = "0.5.3"
+chrono = "0.4"
+rust_decimal = "1.19"
+rust_decimal_macros = "1.19"
