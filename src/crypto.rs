@@ -76,10 +76,15 @@ impl Crypto {
     :param forPrice: The price you sold the crypto for
     :param description: The description of the transaction
     */
-    pub fn sell(&self, date: &str, amount: &str, ticker: &str, for_price: &str, description: &str) {
-        // ticker = ticker.upper()
-        // transaction = Transaction(self.db)
-        // transaction.sell(date, amount, ticker, forPrice, description)
+    pub fn sell(&mut self, args: &ArgMatches) -> Result<(), CryptoError> {
+        let date = args.value_of("date").unwrap();
+        let amount = args.value_of("amount").unwrap();
+        let ticker = args.value_of("ticker").unwrap().to_uppercase();
+        let for_price = args.value_of("for_price").unwrap();
+        let description = args.value_of("description").unwrap();
+
+        let transaction = Transaction::new(&mut self.db, &self.config);
+        transaction.sell(date, amount, &ticker, for_price, description)
     }
     
     /**
@@ -89,15 +94,20 @@ impl Crypto {
     :param fromTicker: crypto that is exchanged for toTicker
     :param toAmount: amount of toTicker you bought with fromTicker
     :param toTicker: the new crypto that was bought
-    :param toPrice: the current price (in fiat currency) for the amount of crypto (toTicker) that was bought
+    :param atPrice: the current price (in fiat currency) for the amount of crypto (toTicker) that was bought
     :param description: The description of the transaction
     */
-    pub fn exchange(&self, date: &str, from_amount: &str, from_ticker: &str, to_amount: &str, to_ticker: &str, to_price: &str, description: &str) {
-        // fromTicker = fromTicker.upper()
-        // toTicker = toTicker.upper()
+    pub fn exchange(&mut self, args: &ArgMatches) -> Result<(), CryptoError> {
+        let date = args.value_of("date").unwrap();
+        let from_amount = args.value_of("from_amount").unwrap();
+        let from_ticker = args.value_of("from_ticker").unwrap().to_uppercase();
+        let to_amount = args.value_of("to_amount").unwrap();
+        let to_ticker = args.value_of("to_ticker").unwrap().to_uppercase();
+        let at_price = args.value_of("at_price").unwrap();
+        let description = args.value_of("description");
         
-        // transaction = Transaction(self.db)
-        // transaction.exchange(date, fromAmount, fromTicker, toAmount, toTicker, toPrice, description)
+        let transaction = Transaction::new(&mut self.db, &self.config);
+        transaction.exchange(date, from_amount, &from_ticker, to_amount, &to_ticker, at_price, description)
     }
     
     /**
