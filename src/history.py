@@ -34,10 +34,5 @@ class History:
             
             print("")
                 
-            # "date": self.convertStrToDate(date),
-            # "amount": Decimal(str(amount)),
-            # "price": Decimal(str(price)),
-            # "description": description,
-            # "type": tType
-        
+
         
