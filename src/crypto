@@ -173,6 +173,10 @@ class Crypto(object):
         report = Report(self.db)
         report.history(self.history, all, withIds)
 
+    def export_source(self):
+        history = History(self.db)
+        history.from_source(Config())
+
 
 if __name__ == '__main__':
     fire.Fire(Crypto)
