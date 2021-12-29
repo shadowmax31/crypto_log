@@ -129,7 +129,7 @@ impl Crypto {
     pub fn amount(&self, args: &ArgMatches) -> Result<(), CryptoError> {
        let ticker = args.value_of("ticker").unwrap().to_uppercase();
         
-        let report = Report::new(&self.db);
+        let report = Report::new(&self.db, &self.config);
         report.amount(&ticker)
     }
     
@@ -138,11 +138,12 @@ impl Crypto {
     :param ticker: Crypto ticker
     :param details: Use this parameter if you want more details on the report
     */
-    pub fn cost(&self, ticker: &str, details: bool) {
-        // ticker = ticker.upper()
+    pub fn cost(&self, args: &ArgMatches) -> Result<(), CryptoError> {
+       let ticker = args.value_of("ticker").unwrap().to_uppercase();
+       let details = args.is_present("details");
         
-        // report = Report(self.db)
-        // report.costBasis(ticker, details)
+        let report = Report::new(&self.db, &self.config);
+        report.cost_basis(&ticker, details)
     }
     
     /**
