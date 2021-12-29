@@ -20,12 +20,7 @@
                 }
             },
             "args": [
-                "buy",
-                "2021-12-14T14:52:20",
-                "0.25",
-                "btc",
-                "5000",
-                "Testing"
+                "list",
             ],
             "cwd": "${workspaceFolder}"
         },
