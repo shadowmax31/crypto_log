@@ -6,6 +6,7 @@ use util::error::CryptoError;
 mod crypto;
 mod transaction;
 mod util;
+mod report;
 
 fn main() -> Result<(), CryptoError> {
     let m = App::new("crypto")
@@ -38,6 +39,10 @@ fn main() -> Result<(), CryptoError> {
                 .arg(Arg::with_name("at_price").required(true).index(6))
                 .arg(Arg::with_name("description").required(false).index(7))
         )
+        .subcommand(
+            SubCommand::with_name("amount")
+                .arg(Arg::with_name("ticker").required(true).index(1))
+        )
         .get_matches();
 
     let mut crypto = Crypto::new()?;
@@ -51,6 +56,10 @@ fn main() -> Result<(), CryptoError> {
 
     if let Some(m) = m.subcommand_matches("exchange") {
         crypto.exchange(m)?;
+    }
+
+    if let Some(m) = m.subcommand_matches("amount") {
+        crypto.amount(m)?;
     }
 
     if let Some(_) = m.subcommand_matches("list") {

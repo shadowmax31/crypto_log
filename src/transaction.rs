@@ -1,4 +1,3 @@
-use std::ascii::AsciiExt;
 use std::str::FromStr;
 
 use chrono::{DateTime, Utc, NaiveDateTime, TimeZone, Local};
@@ -11,7 +10,7 @@ use crate::util::error::CryptoError;
 
 use self::transaction_type::TransactionType;
 
-mod transaction_type;
+pub mod transaction_type;
 
 pub struct Transaction<'a> {
     db: &'a mut Db,
@@ -116,10 +115,7 @@ impl<'a> Transaction<'a> {
                 
                 Ok(local_date.with_timezone(&Utc))
             },
-            Err(a) => {
-                let i = 0;
-                Err(CryptoError::Custom("Error parsing the date [".to_owned() + date + "]"))
-            }
+            Err(_) => Err(CryptoError::Custom("Error parsing the date [".to_owned() + date + "]"))
         }
     }
     

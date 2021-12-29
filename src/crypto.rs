@@ -2,6 +2,7 @@ use clap::ArgMatches;
 use rental_rod::db::Db;
 use uuid::Uuid;
 
+use crate::report::Report;
 use crate::util::config::Config;
 use crate::transaction::Transaction;
 use crate::util::error::CryptoError;
@@ -125,11 +126,11 @@ impl Crypto {
     Gets the amount of crypto for the ticker
     :param ticker: Crypto ticker
     */
-    pub fn amount(&self, ticker: &str) {
-        // ticker = ticker.upper()
+    pub fn amount(&self, args: &ArgMatches) -> Result<(), CryptoError> {
+       let ticker = args.value_of("ticker").unwrap().to_uppercase();
         
-        // report = Report(self.db)
-        // report.amount(ticker)
+        let report = Report::new(&self.db);
+        report.amount(&ticker)
     }
     
     /**
