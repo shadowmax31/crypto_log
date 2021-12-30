@@ -20,8 +20,8 @@
                 }
             },
             "args": [
-                "generate",
-                "crypto.csv",
+                "git",
+                "on",
             ],
             "cwd": "${workspaceFolder}"
         },

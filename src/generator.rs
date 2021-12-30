@@ -20,13 +20,15 @@ enum GeneratorType {
 pub struct Generator<'a> {
     config: &'a Config,
     transaction: Transaction<'a>,
+    use_git: bool,
     path: &'a str
 }
 
 impl<'a> Generator<'a> {
     pub fn new(db: &'a mut Db, config: &'a Config, path: &'a str) -> Generator<'a> {
+        let use_git = db.get_use_git();
         let transaction = Transaction::new(db, config);
-        Generator { config, transaction, path }
+        Generator { config, transaction, use_git, path }
     }
     
     pub fn gen(&self) -> Result<(), CryptoError> {
@@ -37,6 +39,11 @@ impl<'a> Generator<'a> {
         
         let mut not_used: Vec<StringRecord> = vec![];
         println!("#!/bin/bash");
+
+        if self.use_git {
+            println!("crypto git off");
+        }
+
         for row in csv.records() {
             let row = row?;
             let used = match generator_type {
@@ -48,6 +55,10 @@ impl<'a> Generator<'a> {
             if !used {
                 not_used.push(row);
             }
+        }
+
+        if self.use_git {
+            println!("crypto git on --message \"Import data from {}\"", self.path);
         }
         
         if not_used.len() > 0 {

@@ -62,6 +62,11 @@ fn main() -> Result<(), CryptoError> {
             SubCommand::with_name("generate")
                 .arg(Arg::with_name("path").required(true).index(1))
         )
+        .subcommand(
+            SubCommand::with_name("git")
+                .arg(Arg::with_name("state").required(true).possible_values(&["on", "off"]) .index(1))
+                .arg(Arg::with_name("message").long("message").takes_value(true))
+        )
         .get_matches();
 
     let mut crypto = Crypto::new()?;
@@ -99,6 +104,10 @@ fn main() -> Result<(), CryptoError> {
 
     if let Some(m) = m.subcommand_matches("delete") {
         crypto.delete(m)?;
+    }
+
+    if let Some(m) = m.subcommand_matches("git") {
+       crypto.git(m)?;
     }
 
     Ok(())

@@ -227,9 +227,9 @@ checksum = "6c230d73fb8d8c1b9c0b3135c5142a8acee3a0558fb8db5cf1cb65f8d7862132"
 
 [[package]]
 name = "rental_rod"
-version = "0.2.0"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "887cd14d19b86dc40fd3c300d21f82606bb553a1586413e98055869f185cb7c0"
+checksum = "f2b17a85521c7e8fca943f10dd2ea6f4db72f5342175970e1a5d202df8f2ba5d"
 dependencies = [
  "chrono",
  "rust_decimal",

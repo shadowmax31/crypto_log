@@ -26,6 +26,19 @@ impl Crypto {
         
         Ok(Crypto { db, config })
     }
+
+    pub fn git(&mut self, args: &ArgMatches) -> Result<(), CryptoError> {
+        let on_off = args.value_of("state").unwrap();
+        let mut msg = None;
+
+        if args.is_present("message") {
+            msg = Some(args.value_of("message").unwrap());
+        }
+
+        self.db.set_use_git(on_off == "on", msg)?;
+
+        Ok(())
+    }
     
     /**
     Lists all the crypto ticker in the database
