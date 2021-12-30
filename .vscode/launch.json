@@ -21,7 +21,7 @@
             },
             "args": [
                 "generate",
-                "transactions_summary.csv",
+                "crypto.csv",
             ],
             "cwd": "${workspaceFolder}"
         },

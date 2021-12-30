@@ -44,7 +44,7 @@ impl<'a> Generator<'a> {
             let used = match generator_type {
                 GeneratorType::ShakePay => shakepay::generate(&self, &row)?,
                 GeneratorType::Newton => newton::generate(&self, &row)?,
-                GeneratorType::CryptoCom => todo!(),
+                GeneratorType::CryptoCom => crypto_com::generate(&self, &row)?,
             };
             
             if !used {
@@ -107,15 +107,15 @@ impl<'a> Generator<'a> {
             msg = "# The transaction exists -- "
         }
         
-        println!("{}crypto exchange \"{}\" {} {} {} {} {} \"{}.path\"", 
+        println!("{}crypto exchange \"{}\" {} {} {} {} {} \"{}\"", 
         msg, date, amount, ticker, to_amount, to_ticker, for_price, self.path);
         
         Ok(())
     }
     
     
-    pub fn echo(&self, msg: &str, row: &StringRecord) {
-        let msg = self.add_row_to_msg(msg, Some(row));
+    pub fn echo(&self, msg: &str, row: Option<&StringRecord>) {
+        let msg = self.add_row_to_msg(msg, row);
         
         println!("echo \"{}\"", msg);
     }
