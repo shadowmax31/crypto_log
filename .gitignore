@@ -1,12 +1,5 @@
 build
-dist
-
-src/crypto.egg-info
-src/__pycache__
-
-tests/__pycache__
-__pycache__
-
+transactions_summary.csv
 
 # Added by cargo
 

@@ -23,3 +23,9 @@ impl From<rust_decimal::Error> for CryptoError {
         CryptoError::Custom(error.to_string())
     }
 }
+
+impl From<csv::Error> for CryptoError {
+    fn from(error: csv::Error) -> Self {
+        CryptoError::Custom(error.to_string())
+    }
+}

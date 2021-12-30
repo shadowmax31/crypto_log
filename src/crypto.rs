@@ -2,6 +2,7 @@ use clap::{ArgMatches, value_t};
 use rental_rod::db::Db;
 use uuid::Uuid;
 
+use crate::generator::Generator;
 use crate::report::Report;
 use crate::util::config::Config;
 use crate::transaction::Transaction;
@@ -115,9 +116,11 @@ impl Crypto {
     Import a file from any supported exchange (the app supports ShakePay, Crypto.com and Newton)
     :param path: The path to the file to import
     */
-    pub fn generate(&self, path: &str) {
-        // gen = Generate(self.db, path)
-        // gen.gen()
+    pub fn generate(&mut self, args: &ArgMatches) -> Result<(), CryptoError> {
+        let path = args.value_of("path").unwrap();
+
+        let generator = Generator::new(&mut self.db, &self.config, path);
+        generator.gen()
     }
     
     // Reports
@@ -161,15 +164,5 @@ impl Crypto {
         
         let report = Report::new(&self.db, &self.config);
         report.capital_gain(year, details)
-    }
-    
-    /**
-    Exports the history of transaction in the current database
-    :param all: Returns all the interactions in the history
-    :param withIds: Adds the id of the related document in the report
-    */
-    pub fn export(&self, all: bool, with_ids: bool) {
-        // report = Report(self.db)
-        // report.history(self.history, all, withIds)
-    }
+    }    
 }

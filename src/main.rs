@@ -7,6 +7,7 @@ mod crypto;
 mod transaction;
 mod util;
 mod report;
+mod generator;
 
 fn main() -> Result<(), CryptoError> {
     let m = App::new("crypto")
@@ -53,6 +54,10 @@ fn main() -> Result<(), CryptoError> {
             SubCommand::with_name("amount")
                 .arg(Arg::with_name("ticker").required(true).index(1))
         )
+        .subcommand(
+            SubCommand::with_name("generate")
+                .arg(Arg::with_name("path").required(true).index(1))
+        )
         .get_matches();
 
     let mut crypto = Crypto::new()?;
@@ -82,6 +87,10 @@ fn main() -> Result<(), CryptoError> {
 
     if let Some(_) = m.subcommand_matches("list") {
         crypto.list()?;
+    }
+
+    if let Some(m) = m.subcommand_matches("generate") {
+        crypto.generate(m);
     }
 
     Ok(())
