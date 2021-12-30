@@ -45,6 +45,11 @@ fn main() -> Result<(), CryptoError> {
                 .arg(Arg::with_name("details").long("details"))
         )
         .subcommand(
+            SubCommand::with_name("cg")
+                .arg(Arg::with_name("year").index(1))
+                .arg(Arg::with_name("details").long("details"))
+        )
+        .subcommand(
             SubCommand::with_name("amount")
                 .arg(Arg::with_name("ticker").required(true).index(1))
         )
@@ -61,6 +66,10 @@ fn main() -> Result<(), CryptoError> {
 
     if let Some(m) = m.subcommand_matches("exchange") {
         crypto.exchange(m)?;
+    }
+
+    if let Some(m) = m.subcommand_matches("cg") {
+        crypto.cg(m)?;
     }
 
     if let Some(m) = m.subcommand_matches("cost") {

@@ -1,4 +1,4 @@
-use clap::ArgMatches;
+use clap::{ArgMatches, value_t};
 use rental_rod::db::Db;
 use uuid::Uuid;
 
@@ -19,10 +19,10 @@ impl Crypto {
     */
     pub fn new() -> Result<Crypto, CryptoError> {
         let config = Config::new()?;
-
+        
         let path = config.db_path()?;
         let db = Db::new(&path)?;
-
+        
         Ok(Crypto { db, config })
     }
     
@@ -31,11 +31,11 @@ impl Crypto {
     */
     pub fn list(&self) -> Result<(), CryptoError> {
         let tables = crate::util::helper::list_tickers(&self.db)?;
-
+        
         for table in tables {
             println!("{}", table);
         }
-
+        
         Ok(())
     }
     
@@ -63,7 +63,7 @@ impl Crypto {
         let ticker = args.value_of("ticker").unwrap().to_uppercase();
         let price = args.value_of("price").unwrap();
         let description = args.value_of("description").unwrap();
-
+        
         let transaction = Transaction::new(&mut self.db, &self.config);
         transaction.buy(date, amount, &ticker, price, description)
     }
@@ -83,7 +83,7 @@ impl Crypto {
         let ticker = args.value_of("ticker").unwrap().to_uppercase();
         let for_price = args.value_of("for_price").unwrap();
         let description = args.value_of("description").unwrap();
-
+        
         let transaction = Transaction::new(&mut self.db, &self.config);
         transaction.sell(date, amount, &ticker, for_price, description)
     }
@@ -127,7 +127,7 @@ impl Crypto {
     :param ticker: Crypto ticker
     */
     pub fn amount(&self, args: &ArgMatches) -> Result<(), CryptoError> {
-       let ticker = args.value_of("ticker").unwrap().to_uppercase();
+        let ticker = args.value_of("ticker").unwrap().to_uppercase();
         
         let report = Report::new(&self.db, &self.config);
         report.amount(&ticker)
@@ -139,8 +139,8 @@ impl Crypto {
     :param details: Use this parameter if you want more details on the report
     */
     pub fn cost(&self, args: &ArgMatches) -> Result<(), CryptoError> {
-       let ticker = args.value_of("ticker").unwrap().to_uppercase();
-       let details = args.is_present("details");
+        let ticker = args.value_of("ticker").unwrap().to_uppercase();
+        let details = args.is_present("details");
         
         let report = Report::new(&self.db, &self.config);
         report.cost_basis(&ticker, details)
@@ -151,9 +151,16 @@ impl Crypto {
     :param year: Choose the related year for the capital gain (current year by detault)
     :param details: Use this parameter if you want more details on the report
     */
-    pub fn cg(&self, year: Option<i64>, details: bool) {
-        // report = Report(self.db)
-        // report.capitalGain(year, details)
+    pub fn cg(&self, args: &ArgMatches) -> Result<(), CryptoError> {
+        let mut year = None;
+        if args.is_present("year") {
+            year = Some(value_t!(args.value_of("year"), i32).unwrap_or_else(|error| error.exit()));
+        }
+        
+        let details = args.is_present("details");
+        
+        let report = Report::new(&self.db, &self.config);
+        report.capital_gain(year, details)
     }
     
     /**

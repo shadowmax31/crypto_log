@@ -1,11 +1,14 @@
+use chrono::{Datelike, Local};
 use rental_rod::db::Db;
+use rust_decimal::Decimal;
 
-use crate::{util::{color::{GREEN, ENDC, YELLOW}, error::CryptoError, config::Config}, report::amount::get_amount};
+use crate::{util::{color::{GREEN, ENDC, YELLOW, RED}, error::CryptoError, config::Config}, report::amount::get_amount};
 
-use self::cost_basis::CostBasis;
+use self::{cost_basis::CostBasis, capital_gain::CapitalGain};
 
 mod amount;
 mod cost_basis;
+mod capital_gain;
 
 pub struct Report<'a> {
     db: &'a Db,
@@ -58,5 +61,49 @@ impl<'a> Report<'a> {
 
         Ok(())
     }
+
+
+
+    // pub fn format_gain_loss(&self, value: &Decimal) -> String {
+    //     let sign;
+    //     if value.is_sign_positive() {
+    //         sign = format!("{}+", GREEN);
+    //     }
+    //     else {
+    //         sign = RED.to_owned();
+    //     }
+
+    //     sign.to_owned() + &value.to_string() + "$" + ENDC
+    // }
+
+
+    pub fn capital_gain(&self, year: Option<i32>, details: bool) -> Result<(), CryptoError> {
+        let year = match year {
+            Some(y) => y,
+            None => Local::now().year()
+        };
+
+        let cg = CapitalGain::new(self.db, self.config);
+        let gain = cg.gain(year, details)?;
+        if details && gain != Decimal::ZERO {
+            println!();
+        }
+                        
+        let gain = gain.round_dp(2);
+        if gain > Decimal::ZERO {
+            println!("You have {}{}${} of capital gain", YELLOW, gain, ENDC);
+        }
+        else if gain < Decimal::ZERO {
+            println!("You have {}{}${} of capital losses", RED, gain.abs(), ENDC);
+        }
+        else {
+            println!("{}You have no capital gains or losses{}", GREEN, ENDC);
+        }
+
+        Ok(())
+    }
+
+
+
 
 }

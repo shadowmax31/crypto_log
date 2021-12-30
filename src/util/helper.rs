@@ -1,3 +1,6 @@
+use std::cmp::Ordering;
+
+use chrono::{DateTime, Utc, Local};
 use rental_rod::db::{Db, line::Line};
 use rust_decimal::Decimal;
 
@@ -24,12 +27,14 @@ pub trait Transaction {
     fn get_amount(&self) -> Result<&Decimal, CryptoError>;
     fn get_price(&self) -> Result<&Decimal, CryptoError>;
     fn get_date_str(&self, config: &Config) -> Result<String, CryptoError>;
+    fn get_date(&self) -> Result<&DateTime<Utc>, CryptoError>;
     fn get_decimal(&self, name: &str) -> Result<&Decimal, CryptoError>;
+    fn to_short_id(&self) -> String;
 }
 
 impl Transaction for Line {
     fn get_type(&self) -> Result<String, CryptoError> {
-        match self.get_read("type") {
+        match self.get("type") {
             Some(field) => Ok(field.get().to_str()?),
             None => Err(CryptoError::Custom(format!("Missing field type for line [{}]", self.get_id().to_string())))
         }
@@ -45,17 +50,42 @@ impl Transaction for Line {
 
     fn get_date_str(&self, config: &Config) -> Result<String, CryptoError> {
         let format = config.date_format()?;
-        match self.get_read("date") {
-            Some(field) => Ok(field.get().to_datetime()?.format(&format).to_string()),
+        match self.get("date") {
+            Some(field) => Ok(field.get().to_datetime()?.with_timezone(&Local).format(&format).to_string()),
             None => return Err(CryptoError::Custom(format!("Missing field {} for line [{}]", "date", self.get_id().to_string())))
         }
     }
 
     fn get_decimal(&self, name: &str) -> Result<&Decimal, CryptoError> {
-        match self.get_read(name) {
+        match self.get(name) {
             Some(field) => Ok(field.get().to_decimal()?),
             None => return Err(CryptoError::Custom(format!("Missing field {} for line [{}]", name, self.get_id().to_string())))
         }
     }
+
+    fn get_date(&self) -> Result<&DateTime<Utc>, CryptoError> {
+        match self.get("date") {
+            Some(field) => Ok(field.get().to_datetime()?),
+            None => return Err(CryptoError::Custom(format!("Missing field {} for line [{}]", "date", self.get_id().to_string())))
+        }
+    }
+
+    fn to_short_id(&self) -> String {
+        self.get_id().to_string()[..8].to_owned()
+    }
     
+}
+
+pub fn sort_by_date(lines: &mut Vec<&Line>) {
+    lines.sort_by(|l1, l2| {
+        let mut order = Ordering::Less;
+        let date1 = l1.get("date").unwrap();
+        let date2 = l2.get("date").unwrap();
+
+        if date1.get().to_datetime().unwrap() > date2.get().to_datetime().unwrap() {
+            order = Ordering::Greater;
+        }
+
+        order
+    });
 }

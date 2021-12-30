@@ -168,9 +168,9 @@ dependencies = [
 
 [[package]]
 name = "rental_rod"
-version = "0.1.5"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e3839894d8597f9e4156882414852ed90fcbaa9fbef875992a09ac9e0f82ce1"
+checksum = "887cd14d19b86dc40fd3c300d21f82606bb553a1586413e98055869f185cb7c0"
 dependencies = [
  "chrono",
  "rust_decimal",
