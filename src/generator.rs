@@ -33,7 +33,7 @@ impl<'a> Generator<'a> {
     
     pub fn gen(&self) -> Result<(), CryptoError> {
         // del = ,
-        let mut csv = csv::Reader::from_path(self.path)?;
+        let mut csv = csv::ReaderBuilder::new().flexible(true).from_path(self.path)?;
         
         let generator_type = self.get_generator_type(csv.headers()?)?;
         
@@ -43,7 +43,7 @@ impl<'a> Generator<'a> {
             let row = row?;
             let used = match generator_type {
                 GeneratorType::ShakePay => shakepay::generate(&self, &row)?,
-                GeneratorType::Newton => todo!(),
+                GeneratorType::Newton => newton::generate(&self, &row)?,
                 GeneratorType::CryptoCom => todo!(),
             };
             
@@ -173,6 +173,10 @@ impl<'a> Generator<'a> {
         
         let s_date = date_utc.with_timezone(&Local).format(format).to_string();
         Ok(s_date)
+    }
+
+    pub fn convert_date_to_str(&self, date: NaiveDateTime) -> Result<String, CryptoError> {
+        Ok(date.format(&self.config.date_format()?).to_string())
     }
     
 }

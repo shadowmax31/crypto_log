@@ -90,7 +90,7 @@ fn main() -> Result<(), CryptoError> {
     }
 
     if let Some(m) = m.subcommand_matches("generate") {
-        crypto.generate(m);
+        crypto.generate(m)?;
     }
 
     Ok(())
