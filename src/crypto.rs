@@ -45,9 +45,15 @@ impl Crypto {
     :param table: Table to use to delete the document
     :param docId: Id of the document to delete
     */
-    pub fn delete(&self, table: &str, id: Uuid) {
-        // tbl = self.db.table(table)
-        // tbl.remove(doc_ids=[docId])
+    pub fn delete(&mut self, args: &ArgMatches) -> Result<(), CryptoError> {
+        let ticker = args.value_of("ticker").unwrap().to_uppercase();
+        let id = Uuid::parse_str(args.value_of("id").unwrap())?;
+
+        let mut table = self.db.table(&ticker)?;
+        table.delete(&id);
+        
+        self.db.write(&mut table)?;
+        Ok(())
     }
     
     /**

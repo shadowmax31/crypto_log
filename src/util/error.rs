@@ -29,3 +29,9 @@ impl From<csv::Error> for CryptoError {
         CryptoError::Custom(error.to_string())
     }
 }
+
+impl From<uuid::Error> for CryptoError {
+    fn from(error: uuid::Error) -> Self {
+        CryptoError::Custom(error.to_string())
+    }
+}

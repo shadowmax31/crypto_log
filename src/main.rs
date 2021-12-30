@@ -2,7 +2,6 @@ use clap::{App, SubCommand, Arg};
 use crypto::Crypto;
 use util::error::CryptoError;
 
-#[allow(dead_code, unused_variables)]
 mod crypto;
 mod transaction;
 mod util;
@@ -55,6 +54,11 @@ fn main() -> Result<(), CryptoError> {
                 .arg(Arg::with_name("ticker").required(true).index(1))
         )
         .subcommand(
+            SubCommand::with_name("delete")
+                .arg(Arg::with_name("ticker").required(true).index(1))
+                .arg(Arg::with_name("id").required(true).index(2))
+        )
+        .subcommand(
             SubCommand::with_name("generate")
                 .arg(Arg::with_name("path").required(true).index(1))
         )
@@ -91,6 +95,10 @@ fn main() -> Result<(), CryptoError> {
 
     if let Some(m) = m.subcommand_matches("generate") {
         crypto.generate(m)?;
+    }
+
+    if let Some(m) = m.subcommand_matches("delete") {
+        crypto.delete(m)?;
     }
 
     Ok(())
