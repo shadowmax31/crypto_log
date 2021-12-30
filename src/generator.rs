@@ -63,7 +63,7 @@ impl<'a> Generator<'a> {
     }
     
     
-    // Picks the right class to import the CSV
+    // Picks the right type of CSV
     fn get_generator_type(&self, row: &StringRecord) -> Result<GeneratorType, String>  {
         let generator_type;
         if row.get_throw(0)? == "Transaction Type" || row.get_throw(1)? == "Date" || row.get_throw(2)? == "Amount Debited" || row.get_throw(3)? == "Debit Currency" {
@@ -154,10 +154,6 @@ impl<'a> Generator<'a> {
         s_row
     }
     
-    
-    
-    
-    // pub fn convert_date(&self, sDate: &str, sFormat: &str, pTimezone=timezone.utc):
     pub fn get_naive_datetime(&self, s_date: &str, format: &str) -> Result<NaiveDateTime, String> {
         match NaiveDateTime::parse_from_str(s_date, format) {
             Ok(date) => Ok(date),
