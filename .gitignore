@@ -1,6 +1,8 @@
 build
 transactions_summary.csv
 
-# Added by cargo
+crypto.ini
+files
 
+# Added by cargo
 /target

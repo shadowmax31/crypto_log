@@ -108,6 +108,6 @@ pub fn convert_to_date_format(date: &str, format: &str) -> Result<DateTime<Utc>,
             
             Ok(local_date.with_timezone(&Utc))
         },
-        Err(_) => Err(CryptoError::Custom("Error parsing the date [".to_owned() + date + "]"))
+        Err(_) => Err(CryptoError::Custom(format!("Error parsing the date [{}] with format {}", date, format)))
     }
 }

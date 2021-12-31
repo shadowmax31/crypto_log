@@ -8,7 +8,14 @@ pub struct Config {
 
 impl Config {
     pub fn new() -> Result<Config, String> {
-        let path = Self::get_home_dir()?.join(".crypto_rs/crypto.ini");
+        let path;
+
+        if cfg!(debug_assertions) {
+            path = PathBuf::from("crypto.ini");
+        }
+        else {
+            path = Self::get_home_dir()?.join(".config/crypto/crypto.ini");
+        }
         
 
         let mut init = Ini::new();
