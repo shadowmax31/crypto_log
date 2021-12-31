@@ -7,8 +7,8 @@ use crate::{util::{color::{GREEN, ENDC, YELLOW, RED}, error::CryptoError, config
 use self::{cost_basis::CostBasis, capital_gain::CapitalGain};
 
 mod amount;
-mod cost_basis;
-mod capital_gain;
+pub mod cost_basis;
+pub mod capital_gain;
 
 pub struct Report<'a> {
     db: &'a Db,

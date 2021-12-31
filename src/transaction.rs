@@ -3,6 +3,7 @@ use std::str::FromStr;
 use rental_rod::db::table::Table;
 use rental_rod::db::{Db, line::Line, field_type::Type};
 use rust_decimal::Decimal;
+use uuid::Uuid;
 
 use crate::util::config::Config;
 use crate::util::error::CryptoError;
@@ -10,7 +11,11 @@ use crate::util::helper::convert_to_date;
 
 use self::transaction_type::TransactionType;
 
+
 pub mod transaction_type;
+
+#[cfg(test)]
+mod transaction_test;
 
 pub struct Transaction<'a> {
     db: &'a mut Db,
@@ -29,28 +34,35 @@ impl<'a> Transaction<'a> {
         Ok(table)
     }
     
-    pub fn buy(&self, date: &str, amount: &str, ticker: &str, price: &str, description: &str) -> Result<(), CryptoError> {
+    pub fn buy(&self, date: &str, amount: &str, ticker: &str, price: &str, description: &str) -> Result<Option<Uuid>, CryptoError> {
         let mut table = self.db.table(ticker)?;
+        let mut id = None;
         if !self.transaction_exists(date, &mut table, false)? {
             let line = self.create_transaction(date, amount, price, description, TransactionType::Buy)?;
+            id = Some(line.get_id().to_owned());
+            
             table.insert(line);
+
             
             self.db.write(&mut table)?;
         }
         
-        Ok(())
+        Ok(id)
     }
     
-    pub fn sell(&self, date: &str, amount: &str, ticker: &str, price: &str, description: &str) -> Result<(), CryptoError> {
+    pub fn sell(&self, date: &str, amount: &str, ticker: &str, price: &str, description: &str) -> Result<Option<Uuid>, CryptoError> {
         let mut table = self.db.table(ticker)?;
+        let mut id = None;
         if !self.transaction_exists(date, &mut table, false)? {
             let line = self.create_transaction(date, amount, price, description, TransactionType::Sell)?;
+            id = Some(line.get_id().to_owned());
+
             table.insert(line);
             
             self.db.write(&mut table)?;
         }
         
-        Ok(())
+        Ok(id)
     }
     
     pub fn exchange(&self, date: &str, from_amount: &str, from_ticker: &str, to_amount: &str, to_ticker: &str, at_price: &str, description: Option<&str>) -> Result<(), CryptoError> {

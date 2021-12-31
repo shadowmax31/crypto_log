@@ -85,7 +85,9 @@ impl Crypto {
         let description = args.value_of("description").unwrap();
         
         let transaction = Transaction::new(&mut self.db, &self.config);
-        transaction.buy(date, amount, &ticker, price, description)
+        transaction.buy(date, amount, &ticker, price, description)?;
+
+        Ok(())
     }
     
     
@@ -105,7 +107,9 @@ impl Crypto {
         let description = args.value_of("description").unwrap();
         
         let transaction = Transaction::new(&mut self.db, &self.config);
-        transaction.sell(date, amount, &ticker, for_price, description)
+        transaction.sell(date, amount, &ticker, for_price, description)?;
+
+        Ok(())
     }
     
     /**
