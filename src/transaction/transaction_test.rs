@@ -1,10 +1,11 @@
 use std::ops::Add;
 
 use chrono::{DateTime, Duration, Local, Datelike};
-use rental_rod::db::Db;
+use rental_rod::db::{Db, table::Table};
 use rust_decimal::Decimal;
+use uuid::Uuid;
 
-use crate::{report::{cost_basis::{CostBasis}, capital_gain::CapitalGain}, util::config::Config};
+use crate::{report::{cost_basis::{CostBasis}, capital_gain::CapitalGain}, util::{config::Config, helper::sort_by_date}};
 
 use super::Transaction;
 
@@ -140,7 +141,9 @@ fn test_buy_sell() {
     // Test buy after sell
     let date = date.inc();
     let id = transaction.buy(&date.to_local_str(&config), "0.30", "btc", "15000", "Description").unwrap().unwrap();
-    let new_cost_basis = cost.calculate(&transaction.table("btc").unwrap(), Some(&id), false).unwrap().unwrap(); // The transaction is not the last one
+    let tmp_table = &mut transaction.table("btc").unwrap();
+    let next_id = get_next_line_id(tmp_table, &id);
+    let new_cost_basis = cost.calculate(&transaction.table("btc").unwrap(), next_id, false).unwrap().unwrap(); // The transaction is not the last one
     assert_eq!(new_cost_basis.to_string(), "16823.5294");
     
     // Second sell test to check the capital gain with multiple tax events
@@ -235,4 +238,24 @@ fn init_db(path: &str, fresh: bool) -> Db {
     }
     
     Db::new(path).unwrap()
+}
+
+fn get_next_line_id<'a>(tbl: &'a mut Table, current: &Uuid) -> Option<&'a Uuid> {
+    let mut id = None;
+    let mut lines = tbl.get_lines();
+    sort_by_date(&mut lines);
+
+    let mut next = false;
+    for line in lines {
+        if next {
+            id = Some(line.get_id());
+            break;
+        }
+
+        if line.get_id() == current {
+            next = true;
+        }
+    }
+
+    id
 }

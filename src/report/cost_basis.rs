@@ -23,6 +23,12 @@ impl<'a> CostBasis<'a> {
         sort_by_date(&mut sorted_lines);
 
         for line in &sorted_lines {
+            if let Some(id) = stop_at {
+                if id == line.get_id() {
+                    break;
+                }
+            }
+
             let t_type = line.get_type()?;
             if t_type == TransactionType::Buy.value() {
                 amount += line.get_amount()?;
@@ -43,11 +49,6 @@ impl<'a> CostBasis<'a> {
             }
         
             self.print_details(print_details, &ticker, line)?;
-            if let Some(id) = stop_at {
-                if id == line.get_id() {
-                    break;
-                }
-            }
         }
         
         let mut cost_basis = Some(Decimal::ZERO);
