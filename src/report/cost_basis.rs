@@ -50,12 +50,13 @@ impl<'a> CostBasis<'a> {
             }
         }
         
-        let mut cost_basis = None;
+        let mut cost_basis = Some(Decimal::ZERO);
         if amount > Decimal::ZERO {
             let calc = total_cost / amount;
             cost_basis = Some(calc.round_dp(4));
         }
         else if amount < Decimal::ZERO {
+            cost_basis = None;
             println!("{}{}You have {} amount of {}. Please check your data.{}", BOLD, RED, amount, ticker, ENDC);
         }
         
