@@ -21,8 +21,15 @@ pub fn generate(generator: &Generator, row: &StringRecord) -> Result<bool, Crypt
         if row.get_throw(3)? == "CAD" {
             generator.transaction_string("buy", &date, amount, ticker, price)?;
         }
+        else if row.get_throw(5)? == "CAD" {
+            let sold_ticker_amount = row.get_throw(2)?;
+            let sold_ticker = row.get_throw(3)?;
+            let sold_for = row.get_throw(4)?;
+
+            generator.transaction_string("sell", &date, sold_ticker_amount, sold_ticker, sold_for)?;
+        }
         else {
-            generator.comment("This transaction type is not supported. Please add an issue on github.", Some(row));
+            generator.comment("This transaction type is not supported. Please add an issue on github.", Some(row)); 
         }
     }
     else if row.get_throw(0)? == "peer transfer" {
